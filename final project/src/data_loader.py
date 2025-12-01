@@ -1,11 +1,3 @@
-"""
-Data Loader for SBIR Award Data
-This module:
-- Loads raw SBIR award data from Excel
-- Filters to NASA awards only for this project's context
-- Drops irrelevant columns
-- Saves cleaned data for faster calls later
-"""
 import os
 import pandas as pd
 
@@ -40,7 +32,6 @@ COLS_TO_DROP = [
     'ri poc name',
     'ri poc phone',
 ]
-
 
 def load_raw_data(file_path=RAW_FILE_PATH):
     """Load raw data from Excel file."""
@@ -102,6 +93,57 @@ def handle_missing_values(df):
     
     return df
 
+def prepare_features(df):
+    """
+    Prepare features for analysis by handling remaining missing values
+    and dropping columns not needed for modeling.
+    
+    """
+    
+    # Further columns to drop - too many null values or irrelevant
+    cols_to_drop = [
+        'address1',
+        'address2', 
+        'city',
+        'state',
+        'zip',
+        'proposal award date',
+        'contract end date',
+        'agency',  
+    ]
+    
+    df = df.drop(columns=cols_to_drop, errors='ignore')
+    print(f"  Dropped location/date columns: {len(cols_to_drop)} columns removed")
+    
+    # Fill missing topic codes with "Unknown"
+    if 'topic code' in df.columns:
+        missing_topic = df['topic code'].isnull().sum()
+        df['topic code'] = df['topic code'].fillna('Unknown')
+        print(f"  Filled {missing_topic:,} missing topic codes with 'Unknown'")
+    
+    # Fill missing employee counts with median
+    if 'number employees' in df.columns:
+        missing_emp = df['number employees'].isnull().sum()
+        median_emp = df['number employees'].median()
+        df['number employees'] = df['number employees'].fillna(median_emp)
+        print(f"  Filled {missing_emp:,} missing employee counts with median ({median_emp:.0f})")
+    
+    # Drop rows with any remaining missing values in critical columns
+    critical_cols = ['company', 'award title', 'abstract', 'award amount', 'phase', 'award year']
+    rows_before = len(df)
+    df = df.dropna(subset=critical_cols)
+    rows_dropped = rows_before - len(df)
+    if rows_dropped > 0:
+        print(f"  Dropped {rows_dropped} rows with missing critical values")
+    
+    print(f"  Final shape: {df.shape[0]:,} rows, {df.shape[1]} columns")
+    print(f"  Remaining columns: {list(df.columns)}")
+    
+    # Verify no missing values in key columns
+    remaining_nulls = df[critical_cols].isnull().sum().sum()
+    print(f"  Missing values in critical columns: {remaining_nulls}")
+    
+    return df
 
 def load_and_clean_data(raw_path=RAW_FILE_PATH, save_path=PROCESSED_FILE_PATH):
     """
@@ -128,6 +170,10 @@ def load_and_clean_data(raw_path=RAW_FILE_PATH, save_path=PROCESSED_FILE_PATH):
     print("\n[4/4] Handling missing values...")
     df = handle_missing_values(df)
     
+    # Step 5: Prepare features
+    print("\n[5/5] Preparing features...")
+    df = prepare_features(df)
+
     # Save cleaned data
     print("\n" + "-" * 60)
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
