@@ -11,9 +11,9 @@ This script orchestrates the full analysis pipeline:
     5. Evaluation and visualization
 
 """
-
-from src.data_loader import load_and_clean_data, load_processed_data
 import os
+from src.data_loader import load_and_clean_data, load_processed_data
+from src.text_processor import process_abstracts
 
 
 def main():
@@ -44,12 +44,17 @@ def main():
     print(f"\nDataset ready: {len(df):,} projects, {len(df.columns)} features")
     
     # =========================================================================
-    # STEP 2: TEXT PREPROCESSING (TODO)
+    # STEP 2: TEXT PREPROCESSING
     # =========================================================================
     print("\n" + "=" * 70)
     print("STEP 2: TEXT PREPROCESSING")
     print("=" * 70)
-    print("Coming soon...")
+    
+    df = process_abstracts(df)
+    
+    # Show a sample of cleaned text
+    print("\nSample cleaned abstract:")
+    print(df['abstract_clean'].iloc[0][:200] + "...")
     
     # =========================================================================
     # STEP 3: FEATURE ENGINEERING (TODO)

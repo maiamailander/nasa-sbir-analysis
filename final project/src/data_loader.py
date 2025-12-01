@@ -1,3 +1,10 @@
+"""
+Data loading and cleaning for NASA SBIR Investment Analysis.
+This module loads the raw SBIR award data, filters to NASA projects,
+drops irrelevant columns, handles missing values, and prepares the
+data for further analysis.
+"""
+
 import os
 import pandas as pd
 
