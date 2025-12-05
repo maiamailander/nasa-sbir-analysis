@@ -14,6 +14,7 @@ This script orchestrates the full analysis pipeline:
 import os
 from src.data_loader import load_and_clean_data, load_processed_data
 from src.text_processor import process_abstracts
+from src.feature_engineering import create_tfidf_features, create_categorical_features, prepare_features_for_modeling
 
 
 def main():
@@ -57,12 +58,20 @@ def main():
     print(df['abstract_clean'].iloc[0][:200] + "...")
     
     # =========================================================================
-    # STEP 3: FEATURE ENGINEERING (TODO)
+    # STEP 3: FEATURE ENGINEERING
     # =========================================================================
     print("\n" + "=" * 70)
     print("STEP 3: FEATURE ENGINEERING")
     print("=" * 70)
-    print("Coming soon...")
+    
+    # Create TF-IDF features from cleaned abstracts
+    tfidf_matrix, vectorizer = create_tfidf_features(df)
+    
+    # Create categorical features
+    df = create_categorical_features(df)
+    
+    # Combine into final feature matrix
+    X, y, feature_names = prepare_features_for_modeling(df, tfidf_matrix, vectorizer)
     
     # =========================================================================
     # STEP 4: MODEL TRAINING (TODO)
