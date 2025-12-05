@@ -1,10 +1,7 @@
 """
-Feature engineering for NASA SBIR analysis.
-
-This module handles:
-- TF-IDF vectorization of cleaned abstracts
-- Creating numerical features from categorical variables
-- Preparing feature matrices for ML models
+TF-IDF vectorization of cleaned abstracts
+Creating numerical features from categorical variables
+Preparing feature matrices for ML models
 """
 
 import pandas as pd
@@ -14,7 +11,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 def create_tfidf_features(df, text_column='abstract_clean', max_features=500):
     """
-    Convert cleaned text to TF-IDF features.
+    Converting cleaned data (abstracts) via TF-IDF and vectorization.
     
     Parameters:
     -----------
@@ -29,37 +26,34 @@ def create_tfidf_features(df, text_column='abstract_clean', max_features=500):
     --------
     tfidf_matrix : sparse matrix
         TF-IDF feature matrix (rows = documents, columns = words)
-    vectorizer : TfidfVectorizer
+    tfidf_vectorizer : TfidfVectorizer
         Fitted vectorizer (needed to inspect feature names)
     """
-    print(f"Creating TF-IDF features from '{text_column}'...")
+    print("\nCreating TF-IDF features...")  
     print(f"  Max features: {max_features}")
-    
-    # Initialize vectorizer
-    vectorizer = TfidfVectorizer(
+   
+    tfidf_vectorizer = TfidfVectorizer(
         max_features=max_features,  # Keep top N words
         min_df=5,                   # Word must appear in at least 5 documents
         max_df=0.95,                # Ignore words in >95% of documents
         ngram_range=(1, 2)          # Include single words and two-word phrases
     )
-    
-    # Fit and transform
-    tfidf_matrix = vectorizer.fit_transform(df[text_column])
-    
-    # Report results
+   
+    tfidf_matrix = tfidf_vectorizer.fit_transform(df[text_column])
+
     print(f"  TF-IDF matrix shape: {tfidf_matrix.shape}")
     print(f"  (rows = projects, columns = unique terms)")
     
     # Show top terms by average TF-IDF score
-    feature_names = vectorizer.get_feature_names_out()
+    feature_names = tfidf_vectorizer.get_feature_names_out()
     avg_scores = np.array(tfidf_matrix.mean(axis=0)).flatten()
     top_indices = avg_scores.argsort()[-10:][::-1]
     
-    print(f"\n  Top 10 terms by average TF-IDF score:")
+    print("\n  Top 10 terms by average TF-IDF score:")
     for i in top_indices:
         print(f"    - {feature_names[i]}: {avg_scores[i]:.4f}")
     
-    return tfidf_matrix, vectorizer
+    return tfidf_matrix, tfidf_vectorizer
 
 
 def create_categorical_features(df):
@@ -99,27 +93,7 @@ def create_categorical_features(df):
 
 
 def prepare_features_for_modeling(df, tfidf_matrix, vectorizer):
-    """
-    Combine TF-IDF and categorical features into final feature matrix.
-    
-    Parameters:
-    -----------
-    df : pd.DataFrame
-        DataFrame with categorical features
-    tfidf_matrix : sparse matrix
-        TF-IDF features
-    vectorizer : TfidfVectorizer
-        Fitted vectorizer
-        
-    Returns:
-    --------
-    X : pd.DataFrame
-        Combined feature matrix
-    y : pd.Series
-        Target variable (award amount)
-    feature_names : list
-        Names of all features
-    """
+    #Combine TF-IDF and categorical features into final feature matrix.
     print("\nPreparing final feature matrix...")
     
     # Convert TF-IDF to DataFrame
@@ -158,9 +132,8 @@ if __name__ == "__main__":
     df = process_abstracts(df)
     
     # Create features
-    tfidf_matrix, vectorizer = create_tfidf_features(df)
+    tfidf_matrix, tfidf_vectorizer = create_tfidf_features(df)
     df = create_categorical_features(df)
-    X, y, feature_names = prepare_features_for_modeling(df, tfidf_matrix, vectorizer)
+    X, y, feature_names = prepare_features_for_modeling(df, tfidf_matrix, tfidf_vectorizer)
     
-    print("\nFeature engineering complete!")
-    print(f"Ready for modeling with {X.shape[1]} features")
+    print("\nFeature engineering complete")
