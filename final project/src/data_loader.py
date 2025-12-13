@@ -1,21 +1,32 @@
 """
-Data loading and cleaning for NASA SBIR Investment Analysis.
-This module loads the raw SBIR award data, filters to NASA projects,
-drops irrelevant columns, handles missing values, and prepares the
-data for further analysis.
+Data loading and preprocessing for NASA SBIR awards analysis.
+
+This module handles:
+- Loading raw SBIR award data from Excel
+- Filtering to NASA awards only
+- Dropping irrelevant columns (including phase - excluded from thematic analysis)
+- Handling missing values
+- Saving cleaned data for downstream analysis
 """
 
-import os
 import pandas as pd
+import os
+
+
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
 
 RAW_FILE_PATH = 'data/award_data.xlsx'
 PROCESSED_FILE_PATH = 'data/processed/award_data_filtered.csv'
 AGENCY_NAME = "National Aeronautics and Space Administration"
 
-# Defining columns to drop - not needed for analysis
+# Columns to drop - administrative/contact fields AND structural features
+# We exclude 'phase' because our analysis focuses on THEMATIC content, not program structure
 COLS_TO_DROP = [
+    # Administrative/contact fields
     'branch',
-    'program', 
+    'program',
     'agency tracking number',
     'contract',
     'solicitation number',
@@ -38,15 +49,20 @@ COLS_TO_DROP = [
     'ri name',
     'ri poc name',
     'ri poc phone',
+    # Structural features - excluded for thematic analysis
+    'phase',  # Phase I/II is structural, not thematic
 ]
+
+
+# =============================================================================
+# FUNCTIONS
+# =============================================================================
 
 def load_raw_data(file_path=RAW_FILE_PATH):
     """Load raw data from Excel file."""
     print(f"Loading data from: {file_path}")
     
     df = pd.read_excel(file_path, engine='openpyxl')
-    
-    # Standardize column names to lowercase
     df.columns = df.columns.str.lower()
     
     print(f"  Loaded {len(df):,} rows, {len(df.columns)} columns")
@@ -55,7 +71,7 @@ def load_raw_data(file_path=RAW_FILE_PATH):
 
 
 def filter_by_agency(df, agency_name=AGENCY_NAME):
-    """Filter raw data to keep only rows from NASA funded projects."""
+    """Filter DataFrame to keep only rows from specified agency."""
     rows_before = len(df)
     
     df_filtered = df[df['agency'] == agency_name].copy()
@@ -70,15 +86,15 @@ def filter_by_agency(df, agency_name=AGENCY_NAME):
 
 
 def drop_columns(df, cols_to_drop=COLS_TO_DROP):
-    """Drop irrelevant columns from DataFrame."""
+    """Drop specified columns from DataFrame."""
     cols_before = len(df.columns)
     
-    # errors='ignore' avoids crashes if a column doesn't exist
     df = df.drop(columns=cols_to_drop, errors='ignore')
     
     cols_after = len(df.columns)
     
     print(f"  Dropped {cols_before - cols_after} columns")
+    print(f"  NOTE: 'phase' column excluded for thematic analysis")
     print(f"  Remaining columns: {list(df.columns)}")
     
     return df
@@ -88,8 +104,6 @@ def handle_missing_values(df):
     """Handle missing values in critical columns."""
     rows_before = len(df)
     
-    # Drop rows where abstract or award amount is missing
-    # These are essential for our analysis
     df = df.dropna(subset=['abstract', 'award amount'])
     
     rows_after = len(df)
@@ -100,23 +114,24 @@ def handle_missing_values(df):
     
     return df
 
+
 def prepare_features(df):
     """
     Prepare features for analysis by handling remaining missing values
     and dropping columns not needed for modeling.
-    
     """
+    print("Preparing features...")
     
-    # Further columns to drop - too many null values or irrelevant
+    # Columns to drop - location/date fields not needed
     cols_to_drop = [
         'address1',
-        'address2', 
+        'address2',
         'city',
         'state',
         'zip',
         'proposal award date',
         'contract end date',
-        'agency',  
+        'agency',  # All rows are NASA
     ]
     
     df = df.drop(columns=cols_to_drop, errors='ignore')
@@ -136,7 +151,7 @@ def prepare_features(df):
         print(f"  Filled {missing_emp:,} missing employee counts with median ({median_emp:.0f})")
     
     # Drop rows with any remaining missing values in critical columns
-    critical_cols = ['company', 'award title', 'abstract', 'award amount', 'phase', 'award year']
+    critical_cols = ['company', 'award title', 'abstract', 'award amount', 'award year']
     rows_before = len(df)
     df = df.dropna(subset=critical_cols)
     rows_dropped = rows_before - len(df)
@@ -146,41 +161,32 @@ def prepare_features(df):
     print(f"  Final shape: {df.shape[0]:,} rows, {df.shape[1]} columns")
     print(f"  Remaining columns: {list(df.columns)}")
     
-    # Verify no missing values in key columns
-    remaining_nulls = df[critical_cols].isnull().sum().sum()
-    print(f"  Missing values in critical columns: {remaining_nulls}")
-    
     return df
+
 
 def load_and_clean_data(raw_path=RAW_FILE_PATH, save_path=PROCESSED_FILE_PATH):
     """
     Main function: Load, clean, and save the SBIR award data.
-    This is the primary entry point for data preprocessing.
     """
     print("=" * 60)
     print("DATA LOADING AND CLEANING")
     print("=" * 60)
     
-    # Step 1: Load raw data
-    print("\n[1/4] Loading raw data...")
+    print("\n[1/5] Loading raw data...")
     df = load_raw_data(raw_path)
     
-    # Step 2: Filter to NASA only
-    print("\n[2/4] Filtering by agency...")
+    print("\n[2/5] Filtering by agency...")
     df = filter_by_agency(df)
     
-    # Step 3: Drop irrelevant columns
-    print("\n[3/4] Dropping irrelevant columns...")
+    print("\n[3/5] Dropping irrelevant columns...")
     df = drop_columns(df)
     
-    # Step 4: Handle missing values
-    print("\n[4/4] Handling missing values...")
+    print("\n[4/5] Handling missing values...")
     df = handle_missing_values(df)
     
-    # Step 5: Prepare features
     print("\n[5/5] Preparing features...")
     df = prepare_features(df)
-
+    
     # Save cleaned data
     print("\n" + "-" * 60)
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
@@ -193,14 +199,12 @@ def load_and_clean_data(raw_path=RAW_FILE_PATH, save_path=PROCESSED_FILE_PATH):
 
 
 def load_processed_data(file_path=PROCESSED_FILE_PATH):
-    """
-    Load already-processed data from CSV.
-    Use this when you've already run the cleaning pipeline.
-    """
+    """Load already-processed data from CSV."""
     print(f"Loading processed data from: {file_path}")
     df = pd.read_csv(file_path)
     print(f"  Loaded {len(df):,} rows, {len(df.columns)} columns")
     return df
+
 
 if __name__ == "__main__":
     df = load_and_clean_data()

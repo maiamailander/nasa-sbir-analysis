@@ -1,9 +1,14 @@
 """
+Text preprocessing for NASA SBIR abstract analysis.
+
 This module handles:
 - Cleaning raw text (lowercase, punctuation removal)
-- Removing stop words
+- Removing stop words (including custom structural terms)
 - Lemmatization
 - Preparing text for TF-IDF vectorization
+
+IMPORTANT: We remove structural/administrative language (e.g., "Phase II",
+"NASA", "SBIR") to focus on project CONTENT, not program structure.
 """
 
 import re
@@ -12,7 +17,6 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
 
-# Download required NLTK data (only needed once)
 def download_nltk_data():
     """Download required NLTK datasets."""
     resources = ['stopwords', 'wordnet', 'punkt']
@@ -27,6 +31,59 @@ def download_nltk_data():
 # Initialize NLTK components
 download_nltk_data()
 STOP_WORDS = set(stopwords.words('english'))
+
+# =============================================================================
+# CUSTOM STOP WORDS
+# =============================================================================
+# These terms are removed because they reflect project STRUCTURE or
+# administrative language, not project CONTENT/THEME.
+# =============================================================================
+
+CUSTOM_STOP_WORDS = {
+    # Phase references - structural, not thematic
+    'phase', 'i', 'ii', 'iii', 'iv',
+    
+    # Program names - administrative
+    'sbir', 'sttr',
+    
+    # Agency references - not thematic
+    'nasa', 'jpl', 'gsfc', 'agency',
+    
+    # Proposal/project language - generic administrative
+    'proposal', 'proposed', 'proposes', 'propose',
+    'project', 'effort', 'work', 'program',
+    
+    # Development language - too generic
+    'develop', 'developed', 'development', 'developing',
+    'demonstrate', 'demonstrated', 'demonstration', 'demonstrating',
+    
+    # Future/conditional tense - not content
+    'will', 'would', 'could', 'should', 'may', 'might',
+    
+    # Generic technical terms that appear everywhere
+    'technology', 'system', 'systems',
+    'method', 'approach', 'technique',
+    'research', 'study', 'analysis',
+    'result', 'results',
+    'goal', 'objective',
+    'innovation', 'innovative', 'novel', 'new',
+    
+    # Company/team references
+    'team', 'company', 'firm', 'inc', 'llc', 'corp',
+    
+    # Common filler words
+    'also', 'well', 'however', 'therefore', 'thus',
+    'using', 'used', 'use', 'based',
+    'provide', 'provides', 'provided', 'providing',
+    'enable', 'enables', 'enabled', 'enabling',
+    'support', 'supports', 'supported', 'supporting',
+    'include', 'includes', 'included', 'including',
+    'require', 'requires', 'required', 'requiring',
+}
+
+# Combine with standard stop words
+STOP_WORDS = STOP_WORDS.union(CUSTOM_STOP_WORDS)
+
 LEMMATIZER = WordNetLemmatizer()
 
 
@@ -44,26 +101,24 @@ def clean_text(text):
     str
         Cleaned text ready for vectorization
     """
-    # Handle missing or non-string values
     if not isinstance(text, str):
         return ""
     
-    # Step 1: Lowercase
+    # Lowercase
     text = text.lower()
     
-    # Step 2: Remove punctuation and numbers
+    # Remove punctuation and numbers
     text = re.sub(r'[^a-z\s]', '', text)
     
-    # Step 3: Split into words
+    # Tokenize
     words = text.split()
     
-    # Step 4: Remove stop words
-    words = [w for w in words if w not in STOP_WORDS]
+    # Remove stop words and short words
+    words = [w for w in words if w not in STOP_WORDS and len(w) > 2]
     
-    # Step 5: Lemmatize (verb tense control)
+    # Lemmatize
     words = [LEMMATIZER.lemmatize(w) for w in words]
     
-    # Rejoin into single string
     return ' '.join(words)
 
 
@@ -72,26 +127,27 @@ def process_abstracts(df, text_column='abstract'):
     Process all abstracts in a DataFrame.
     """
     print(f"Processing {len(df):,} abstracts...")
-   
-    # Create cleaned text column
-    df = df.copy()  # Don't modify original
+    print(f"  Removing {len(CUSTOM_STOP_WORDS)} custom stop words (structural/administrative terms)")
+    
+    df = df.copy()
     df['abstract_clean'] = df[text_column].apply(clean_text)
-   
-    # Report results
+    
     empty_count = (df['abstract_clean'] == '').sum()
     avg_words = df['abstract_clean'].apply(lambda x: len(x.split())).mean()
-   
+    
     print(f"  Cleaned {len(df):,} abstracts")
     print(f"  Empty abstracts after cleaning: {empty_count}")
     print(f"  Average words per abstract: {avg_words:.1f}")
-   
+    
     return df
 
 
-# For testing when run directly
 if __name__ == "__main__":
-    # Test with sample text
-    sample = "SpaceWorks proposes an innovative adaptation of its FuseBlox technology for NASA's robotically-assisted operations in cryogenic environments. The system uses 3D-printed components."
+    sample = """
+    In this Phase II SBIR effort, NASA proposes to develop an innovative
+    lunar propulsion system. The team will demonstrate the technology
+    using advanced thermal management. This project builds on Phase I results.
+    """
     
     print("Original text:")
     print(sample)

@@ -53,10 +53,6 @@ def main():
     
     df = process_abstracts(df)
     
-    # Show a sample of cleaned text
-    print("\nSample cleaned abstract:")
-    print(df['abstract_clean'].iloc[0][:200] + "...")
-    
     # =========================================================================
     # STEP 3: FEATURE ENGINEERING
     # =========================================================================

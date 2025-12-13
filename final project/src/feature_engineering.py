@@ -1,7 +1,13 @@
 """
-TF-IDF vectorization of cleaned abstracts
-Creating numerical features from categorical variables
-Preparing feature matrices for ML models
+Feature engineering for NASA SBIR analysis.
+
+This module handles:
+- TF-IDF vectorization of cleaned abstracts
+- Creating numerical features from categorical variables
+- Preparing feature matrices for ML models
+
+NOTE: Phase-related features are NOT created here.
+      Our analysis focuses on thematic content only.
 """
 
 import pandas as pd
@@ -11,73 +17,46 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 def create_tfidf_features(df, text_column='abstract_clean', max_features=500):
     """
-    Converting cleaned data (abstracts) via TF-IDF and vectorization.
-    
-    Parameters:
-    -----------
-    df : pd.DataFrame
-        DataFrame with cleaned text column
-    text_column : str
-        Name of column containing cleaned text
-    max_features : int
-        Maximum number of words to include (top N by importance)
-        
-    Returns:
-    --------
-    tfidf_matrix : sparse matrix
-        TF-IDF feature matrix (rows = documents, columns = words)
-    tfidf_vectorizer : TfidfVectorizer
-        Fitted vectorizer (needed to inspect feature names)
+    Convert cleaned text to TF-IDF features.
     """
-    print("\nCreating TF-IDF features...")  
+    print(f"\nCreating TF-IDF features from '{text_column}'...")
     print(f"  Max features: {max_features}")
-   
-    tfidf_vectorizer = TfidfVectorizer(
-        max_features=max_features,  # Keep top N words
-        min_df=5,                   # Word must appear in at least 5 documents
-        max_df=0.95,                # Ignore words in >95% of documents
-        ngram_range=(1, 2)          # Include single words and two-word phrases
+    
+    vectorizer = TfidfVectorizer(
+        max_features=max_features,
+        min_df=5,
+        max_df=0.95,
+        ngram_range=(1, 2)
     )
-   
-    tfidf_matrix = tfidf_vectorizer.fit_transform(df[text_column])
-
+    
+    tfidf_matrix = vectorizer.fit_transform(df[text_column])
+    
     print(f"  TF-IDF matrix shape: {tfidf_matrix.shape}")
     print(f"  (rows = projects, columns = unique terms)")
     
-    # Show top terms by average TF-IDF score
-    feature_names = tfidf_vectorizer.get_feature_names_out()
+    # Show top terms
+    feature_names = vectorizer.get_feature_names_out()
     avg_scores = np.array(tfidf_matrix.mean(axis=0)).flatten()
     top_indices = avg_scores.argsort()[-10:][::-1]
     
-    print("\n  Top 10 terms by average TF-IDF score:")
+    print(f"\n  Top 10 terms by average TF-IDF score:")
     for i in top_indices:
         print(f"    - {feature_names[i]}: {avg_scores[i]:.4f}")
     
-    return tfidf_matrix, tfidf_vectorizer
+    return tfidf_matrix, vectorizer
 
 
 def create_categorical_features(df):
     """
     Convert categorical columns to numerical features.
     
-    Parameters:
-    -----------
-    df : pd.DataFrame
-        DataFrame with categorical columns
-        
-    Returns:
-    --------
-    pd.DataFrame
-        DataFrame with numerical features
+    NOTE: Phase-related features are NOT created.
+          Our analysis focuses on thematic content only.
     """
     print("\nCreating categorical features...")
+    print("  NOTE: Phase excluded - focusing on thematic analysis")
     
     df = df.copy()
-    
-    # Phase: Convert to binary (Phase II = 1, Phase I = 0)
-    if 'phase' in df.columns:
-        df['phase_2'] = (df['phase'].str.contains('II', case=False, na=False)).astype(int)
-        print(f"  Created 'phase_2': {df['phase_2'].sum():,} Phase II awards")
     
     # Woman owned: Convert Y/N to binary
     if 'woman owned' in df.columns:
@@ -93,7 +72,12 @@ def create_categorical_features(df):
 
 
 def prepare_features_for_modeling(df, tfidf_matrix, vectorizer):
-    #Combine TF-IDF and categorical features into final feature matrix.
+    """
+    Combine TF-IDF and categorical features into final feature matrix.
+    
+    NOTE: Only thematic features are included.
+          Structural features (phase, year) are excluded.
+    """
     print("\nPreparing final feature matrix...")
     
     # Convert TF-IDF to DataFrame
@@ -103,9 +87,9 @@ def prepare_features_for_modeling(df, tfidf_matrix, vectorizer):
         index=df.index
     )
     
-    # Select numerical/categorical features
-    other_features = df[['phase_2', 'woman_owned', 'disadvantaged', 
-                         'number employees', 'award year']].copy()
+    # Select non-structural features only
+    # We include demographics and company size as they're not "structural" in the same way as phase
+    other_features = df[['woman_owned', 'disadvantaged', 'number employees', 'award year']].copy()
     
     # Combine all features
     X = pd.concat([other_features, tfidf_df], axis=1)
@@ -122,18 +106,15 @@ def prepare_features_for_modeling(df, tfidf_matrix, vectorizer):
     return X, y, list(X.columns)
 
 
-# For testing when run directly
 if __name__ == "__main__":
     from data_loader import load_processed_data
     from text_processor import process_abstracts
     
-    # Load and process data
     df = load_processed_data()
     df = process_abstracts(df)
-    
-    # Create features
-    tfidf_matrix, tfidf_vectorizer = create_tfidf_features(df)
+    tfidf_matrix, vectorizer = create_tfidf_features(df)
     df = create_categorical_features(df)
-    X, y, feature_names = prepare_features_for_modeling(df, tfidf_matrix, tfidf_vectorizer)
+    X, y, feature_names = prepare_features_for_modeling(df, tfidf_matrix, vectorizer)
     
-    print("\nFeature engineering complete")
+    print("\nFeature engineering complete!")
+    print(f"Ready for modeling with {X.shape[1]} features")
