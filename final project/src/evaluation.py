@@ -578,4 +578,27 @@ def run_evaluation(results, df, thematic_features):
 # =============================================================================
 
 if __name__ == "__main__":
-    print("Evaluation module - run via main.py or import functions directly")
+    from data_loader import load_processed_data
+    from text_processor import process_abstracts
+    from feature_engineering import create_tfidf_features, prepare_features_for_modeling
+    from models import run_thematic_analysis_pipeline
+    
+    print("=" * 70)
+    print("NASA SBIR ANALYSIS - EVALUATION PIPELINE")
+    print("=" * 70)
+    
+    # Load and process data
+    print("\nLoading data...")
+    df = load_processed_data()
+    df = process_abstracts(df)
+    tfidf_matrix, vectorizer = create_tfidf_features(df)
+    X, y, feature_names = prepare_features_for_modeling(df, tfidf_matrix, vectorizer)
+    
+    # Run model pipeline to get results
+    print("\nRunning models...")
+    results = run_thematic_analysis_pipeline(
+        df, X, y, tfidf_matrix, vectorizer, feature_names
+    )
+    
+    # Run evaluation pipeline
+    results = run_evaluation(results, df, feature_names)

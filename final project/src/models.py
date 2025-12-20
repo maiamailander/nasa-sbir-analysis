@@ -562,7 +562,6 @@ if __name__ == "__main__":
     from data_loader import load_processed_data
     from text_processor import process_abstracts
     from feature_engineering import create_tfidf_features, prepare_features_for_modeling
-    from evaluation import run_evaluation
     
     print("=" * 70)
     print("NASA SBIR THEMATIC ANALYSIS - MODEL PIPELINE")
@@ -580,5 +579,5 @@ if __name__ == "__main__":
         df, X, y, tfidf_matrix, vectorizer, feature_names
     )
     
-    # Run evaluation pipeline
-    results = run_evaluation(results, df, feature_names)
+    print("\nModel training complete.")
+    print("Run evaluation.py for visualizations and final report.")
