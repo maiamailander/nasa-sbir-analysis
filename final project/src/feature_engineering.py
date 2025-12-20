@@ -5,9 +5,8 @@ This module handles:
 - TF-IDF vectorization of cleaned abstracts
 - Creating numerical features from categorical variables
 - Preparing feature matrices for ML models
+IMPORTANT: We focus on thematic features only.
 
-NOTE: Phase-related features are NOT created here.
-      Our analysis focuses on thematic content only.
 """
 
 import pandas as pd
@@ -45,38 +44,12 @@ def create_tfidf_features(df, text_column='abstract_clean', max_features=500):
     
     return tfidf_matrix, vectorizer
 
-
-def create_categorical_features(df):
-    """
-    Convert categorical columns to numerical features.
-    
-    NOTE: Phase-related features are NOT created.
-          Our analysis focuses on thematic content only.
-    """
-    print("\nCreating categorical features...")
-    print("  NOTE: Phase excluded - focusing on thematic analysis")
-    
-    df = df.copy()
-    
-    # Woman owned: Convert Y/N to binary
-    if 'woman owned' in df.columns:
-        df['woman_owned'] = (df['woman owned'].str.upper() == 'Y').astype(int)
-        print(f"  Created 'woman_owned': {df['woman_owned'].sum():,} woman-owned companies")
-    
-    # Socially/economically disadvantaged: Convert Y/N to binary
-    if 'socially and economically disadvantaged' in df.columns:
-        df['disadvantaged'] = (df['socially and economically disadvantaged'].str.upper() == 'Y').astype(int)
-        print(f"  Created 'disadvantaged': {df['disadvantaged'].sum():,} disadvantaged-owned companies")
-    
-    return df
-
-
 def prepare_features_for_modeling(df, tfidf_matrix, vectorizer):
     """
     Combine TF-IDF and categorical features into final feature matrix.
     
     NOTE: Only thematic features are included.
-          Structural features (phase, year) are excluded.
+
     """
     print("\nPreparing final feature matrix...")
     
@@ -87,12 +60,8 @@ def prepare_features_for_modeling(df, tfidf_matrix, vectorizer):
         index=df.index
     )
     
-    # Select non-structural features only
-    # We include demographics and company size as they're not "structural" in the same way as phase
-    other_features = df[['woman_owned', 'disadvantaged', 'number employees', 'award year']].copy()
-    
-    # Combine all features
-    X = pd.concat([other_features, tfidf_df], axis=1)
+    # Create TF-IDF feature set
+    X = tfidf_df
     
     # Target variable
     y = df['award amount']
@@ -113,7 +82,6 @@ if __name__ == "__main__":
     df = load_processed_data()
     df = process_abstracts(df)
     tfidf_matrix, vectorizer = create_tfidf_features(df)
-    df = create_categorical_features(df)
     X, y, feature_names = prepare_features_for_modeling(df, tfidf_matrix, vectorizer)
     
     print("\nFeature engineering complete!")

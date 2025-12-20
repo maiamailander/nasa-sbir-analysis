@@ -60,15 +60,16 @@ CUSTOM_STOP_WORDS = {
     'will', 'would', 'could', 'should', 'may', 'might', 'can'
     
     # Generic technical terms that appear everywhere
-    'technology', 'system', 'systems',
-    'method', 'approach', 'technique',
-    'research', 'study', 'analysis',
+    'technology', 'system', 'systems', 'trl',
+    'method', 'approach', 'technique', 'behavior', 
+    'research', 'study', 'analysis', 'case',
+    'data', 'information', 'resulted',
     'result', 'results',
     'goal', 'objective',
     'innovation', 'innovative', 'novel', 'new',
     
     # Company/team references
-    'team', 'company', 'firm', 'inc', 'llc', 'corp',
+    'team', 'company', 'firm', 'inc', 'llc', 'corp', 'user',
     
     # Common filler words
     'also', 'well', 'however', 'therefore', 'thus',
@@ -89,21 +90,35 @@ CUSTOM_STOP_WORDS = {
     'improve', 'improved', 'improving', 'improvement',
     'enhance', 'enhanced', 'enhancing', 'enhancement',
     'develop', 'developed', 'using', 'use',
-    'provide'
+    'provide', 'advanced', 'build', 'building', 'built', 'builds',
+    'demonstrate', 'demonstrated', 'demonstrating',
+    'utilize', 'utilized', 'utilizing',
+    'manage', 'managed', 'management',
+    'source', 'sourced', 'sourcing',
+    'control', 'controlled', 'controlling',
+    'multiple', 'various', 'different',
+    'integrated'
     
     # Performance language
     'performance', 'capability', 'capabilities',
     'solution', 'solutions',
     'application', 'applications',
+    'extreme', 'objective', 
+    'safe', 'safety',
+    'relevant',
+    'mission', 'missions', 'prototype',
+    'succesful', 'successfully', 'success',
+    'deliver', 'delivered', 'delivering', 'delivery',
     
     # Process language
     'process', 'processes', 'processing',
     'test', 'testing', 'tested',
     'evaluate', 'evaluation', 'evaluated',
+    'control', 'controlled', 'controlling',
     
     # Cost/benefit language (not thematic)
     'cost', 'costs', 'reduce', 'reduced', 'reduction',
-    'benefit', 'benefits',
+    'benefit', 'benefits', 'high', 'low',
     'commercial', 'commercialization',
     
     # Time references

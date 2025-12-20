@@ -1,0 +1,9 @@
+Cluster,Theme,Projects,Mean Award,Median Award,Std Dev
+5,"laser, lidar, fiber",576,304513.0,124990.0,280232.0
+1,"water, technology, space",3034,296299.0,124978.0,352290.0
+3,"heat, thermal, temperature",517,292028.0,124948.0,371043.0
+2,"sensor, measurement, monitoring",968,285974.0,124974.0,310149.0
+7,"power, optical, technology",3316,285548.0,124967.0,319689.0
+0,"model, tool, software",3748,283802.0,124955.0,306024.0
+6,"cell, solar, battery",652,274003.0,124965.0,269737.0
+4,"material, composite, structure",1506,252621.0,124918.0,263016.0

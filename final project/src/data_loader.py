@@ -37,6 +37,8 @@ COLS_TO_DROP = [
     'duns',
     'hubzone owned',
     'company website',
+    'woman owned',
+    'socially and economically disadvantaged',
     'contact name',
     'contact title',
     'contact phone',

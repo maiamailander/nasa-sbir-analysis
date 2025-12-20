@@ -1,4 +1,3 @@
-# src/__init__.py
 """
 NASA SBIR Thematic Funding Analysis
 
@@ -19,8 +18,9 @@ feature_engineering
 models
     K-Means clustering and regression analysis
 
-Author: Maia Mailander
-Course: Introduction to Data Science and Advanced Programming
+evaluation
+    Model comparison and visualization + findings summary
+
 """
 
 __version__ = "1.0.0"

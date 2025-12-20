@@ -3,8 +3,8 @@ Machine Learning Models for NASA SBIR Funding Analysis.
 
 METHODOLOGY:
 ============
-This analysis investigates which project THEMES are associated with 
-higher NASA SBIR funding. We explicitly exclude structural factors 
+This analysis investigates which project themes are associated with 
+higher NASA SBIR funding. We have excluded structural factors 
 (phase, year, company demographics) to isolate thematic effects.
 
 STRUCTURE:
@@ -14,11 +14,11 @@ PART 1: UNSUPERVISED LEARNING
     1b. Descriptive Analysis - Funding patterns by theme
 
 PART 2: SUPERVISED LEARNING
-    2a. Cluster Regression - Test if project TYPE predicts funding
+    2a. Cluster Regression - Test if project type predicts funding using three regression models
     2b. TF-IDF Regression (Validation) - Compare to raw word approach
 
-Author: Maia Mailander
-Course: Introduction to Data Science and Advanced Programming
+Note: Evaluation, visualization, and final reporting are handled in evaluation.py
+
 """
 
 import numpy as np
@@ -32,87 +32,31 @@ from sklearn.preprocessing import StandardScaler
 
 
 # =============================================================================
-# FEATURE SEPARATION: STRUCTURAL VS THEMATIC
+# FEATURE CONFIRMATION
 # =============================================================================
-
-def separate_features(feature_names, verbose=True):
-    """
-    Programmatically separate structural and thematic features.
-    
-    This is a key methodological step: we explicitly identify and exclude
-    structural features to isolate the relationship between project
-    CONTENT and funding levels.
-    """
-    
-    # Structural features - excluded from thematic analysis
-    STRUCTURAL_FEATURES = {
-        'award year': 'Year the award was granted',
-        'woman_owned': 'Whether company is woman-owned',
-        'disadvantaged': 'Whether company is socially/economically disadvantaged',
-        'number employees': 'Company size',
-    }
-    
-    # Separate using list comprehension
-    structural = [f for f in feature_names if f in STRUCTURAL_FEATURES]
-    thematic = [f for f in feature_names if f not in STRUCTURAL_FEATURES]
-    tfidf_features = [f for f in thematic if f.startswith('tfidf_')]
-    
-    if verbose:
-        print("\n" + "=" * 70)
-        print("FEATURE SEPARATION: Structural vs Thematic")
-        print("=" * 70)
-        
-        print("\n" + "-" * 70)
-        print("STRUCTURAL FEATURES (Excluded)")
-        print("-" * 70)
-        for feature in structural:
-            description = STRUCTURAL_FEATURES.get(feature, '')
-            print(f"  ✗ {feature:<25} | {description}")
-        print(f"\n  Total excluded: {len(structural)}")
-        
-        print("\n" + "-" * 70)
-        print("THEMATIC FEATURES (Included)")
-        print("-" * 70)
-        print(f"  ✓ TF-IDF text features: {len(tfidf_features)}")
-        print(f"\n  Total included: {len(thematic)}")
-        
-        print("\n" + "-" * 70)
-        print("RATIONALE")
-        print("-" * 70)
-        print("""
-  Structural features (especially Phase) dominate funding predictions
-  but don't reveal NASA's thematic priorities. By excluding them,
-  we isolate the relationship between project CONTENT and funding.
-        """)
-    
-    return {
-        'thematic': thematic,
-        'structural': structural,
-        'tfidf': tfidf_features,
-    }
-
 
 def create_thematic_feature_matrix(X, feature_names):
     """
-    Create feature matrix with ONLY thematic features.
+    Confirm feature matrix contains only thematic features.
+    
+    Since structural features were excluded during feature engineering,
+    X already contains only TF-IDF thematic features.
     """
-    separation = separate_features(feature_names, verbose=True)
-    thematic_features = separation['thematic']
-    
-    if isinstance(X, pd.DataFrame):
-        X_thematic = X[thematic_features].copy()
-    else:
-        X_df = pd.DataFrame(X, columns=feature_names)
-        X_thematic = X_df[thematic_features].copy()
-    
     print("\n" + "-" * 70)
     print("THEMATIC FEATURE MATRIX")
     print("-" * 70)
-    print(f"  Original: {X.shape[0]:,} samples × {X.shape[1]} features")
-    print(f"  Thematic: {X_thematic.shape[0]:,} samples × {X_thematic.shape[1]} features")
-    print(f"  Removed: {X.shape[1] - X_thematic.shape[1]} structural variables")
+    print(f"  Samples: {X.shape[0]:,}")
+    print(f"  Features: {X.shape[1]} (all TF-IDF thematic)")
+    print("  Structural features: excluded during feature engineering")
     
-    return X_thematic, thematic_features, separation
+    if isinstance(X, pd.DataFrame):
+        X_thematic = X.copy()
+    else:
+        X_thematic = pd.DataFrame(X, columns=feature_names)
+    
+    thematic_features = list(feature_names)
+    
+    return X_thematic, thematic_features
 
 
 # =============================================================================
@@ -498,74 +442,6 @@ def regression_on_tfidf(X_thematic, y, thematic_features):
 
 
 # =============================================================================
-# COMPARISON: CLUSTERS VS TF-IDF
-# =============================================================================
-
-def compare_approaches(cluster_cv, tfidf_cv):
-    """
-    Compare cluster-based vs TF-IDF-based regression.
-    """
-    print("\n" + "=" * 70)
-    print("VALIDATION COMPARISON: Clusters vs TF-IDF")
-    print("=" * 70)
-    
-    print("""
-    Question: Does clustering lose predictive information?
-    
-    If cluster regression performs similarly to TF-IDF regression,
-    then grouping words into themes preserves the relevant signal.
-    """)
-    
-    # Best results from each approach
-    best_cluster = max(cluster_cv.keys(), key=lambda x: cluster_cv[x]['r2_mean'])
-    best_tfidf = max(tfidf_cv.keys(), key=lambda x: tfidf_cv[x]['r2_mean'])
-    
-    cluster_r2 = cluster_cv[best_cluster]['r2_mean']
-    cluster_mae = cluster_cv[best_cluster]['mae_mean']
-    tfidf_r2 = tfidf_cv[best_tfidf]['r2_mean']
-    tfidf_mae = tfidf_cv[best_tfidf]['mae_mean']
-    
-    print(f"\n{'Approach':<25}{'Features':>10}{'CV R²':>12}{'CV MAE':>15}")
-    print("-" * 65)
-    print(f"{'Cluster Regression':<25}{8:>10}{cluster_r2:>12.4f}${cluster_mae:>14,.0f}")
-    print(f"{'TF-IDF Regression':<25}{500:>10}{tfidf_r2:>12.4f}${tfidf_mae:>14,.0f}")
-    
-    print(f"\n" + "-" * 50)
-    print("INTERPRETATION")
-    print("-" * 50)
-    
-    if abs(cluster_r2 - tfidf_r2) < 0.02:
-        conclusion = "similar"
-        interpretation = """
-    Both approaches show similar (low) predictive power.
-    This validates that clustering doesn't lose information —
-    the 8 cluster features capture the same signal as 500 words.
-        """
-    elif cluster_r2 > tfidf_r2:
-        conclusion = "cluster_better"
-        interpretation = """
-    Cluster features outperform TF-IDF features.
-    Grouping words into coherent themes provides better signal
-    than treating words independently.
-        """
-    else:
-        conclusion = "tfidf_better"
-        interpretation = """
-    TF-IDF features slightly outperform cluster features.
-    However, both show low R², confirming that thematic content
-    alone cannot predict individual award amounts.
-        """
-    
-    print(interpretation)
-    
-    return {
-        'cluster': {'r2': cluster_r2, 'mae': cluster_mae},
-        'tfidf': {'r2': tfidf_r2, 'mae': tfidf_mae},
-        'conclusion': conclusion
-    }
-
-
-# =============================================================================
 # MAIN PIPELINE
 # =============================================================================
 
@@ -580,6 +456,9 @@ def run_thematic_analysis_pipeline(df, X, y, tfidf_matrix, vectorizer, feature_n
     PART 2: SUPERVISED LEARNING
         2a. Cluster Regression
         2b. TF-IDF Validation
+    
+    Returns:
+        results dict to be passed to evaluation.run_evaluation()
     """
     print("\n" + "=" * 70)
     print("NASA SBIR THEMATIC ANALYSIS")
@@ -596,12 +475,12 @@ def run_thematic_analysis_pipeline(df, X, y, tfidf_matrix, vectorizer, feature_n
     results = {}
     
     # =========================================================================
-    # FEATURE SEPARATION
+    # FEATURE CONFIRMATION
     # =========================================================================
-    X_thematic, thematic_features, separation = create_thematic_feature_matrix(
+    X_thematic, thematic_features = create_thematic_feature_matrix(
         X, feature_names
     )
-    results['separation'] = separation
+    results['thematic_features'] = thematic_features
     
     # =========================================================================
     # PART 1: UNSUPERVISED LEARNING
@@ -667,75 +546,10 @@ def run_thematic_analysis_pipeline(df, X, y, tfidf_matrix, vectorizer, feature_n
     results['tfidf_cv'] = tfidf_cv
     results['tfidf_importance'] = tfidf_importance
     
-    # Comparison
-    comparison = compare_approaches(cluster_cv, tfidf_cv)
-    results['comparison'] = comparison
-    
-    # =========================================================================
-    # FINAL SUMMARY
-    # =========================================================================
     print("\n" + "=" * 70)
-    print("FINAL SUMMARY")
+    print("MODEL TRAINING COMPLETE")
     print("=" * 70)
-    
-    print("\n" + "-" * 70)
-    print("METHODOLOGY")
-    print("-" * 70)
-    print(f"""
-    Data: {len(df):,} NASA SBIR projects
-    Features: {len(thematic_features)} thematic (TF-IDF)
-    Excluded: {len(separation['structural'])} structural ({', '.join(separation['structural'])})
-    """)
-    
-    print("-" * 70)
-    print("KEY FINDINGS")
-    print("-" * 70)
-    
-    # Finding 1: Project types
-    print(f"\n1. PROJECT TYPES (Unsupervised Learning)")
-    print(f"   Discovered {len(cluster_terms)} distinct thematic categories")
-    for i, terms in cluster_terms.items():
-        print(f"     Cluster {i}: {', '.join(terms[:3])}")
-    
-    # Finding 2: Funding patterns
-    max_cluster = cluster_funding['mean'].idxmax()
-    min_cluster = cluster_funding['mean'].idxmin()
-    max_mean = cluster_funding.loc[max_cluster, 'mean']
-    min_mean = cluster_funding.loc[min_cluster, 'mean']
-    
-    print(f"\n2. FUNDING PATTERNS (Descriptive Analysis)")
-    print(f"   Highest: Cluster {max_cluster} ({', '.join(cluster_terms[max_cluster][:2])}) - ${max_mean:,.0f}")
-    print(f"   Lowest:  Cluster {min_cluster} ({', '.join(cluster_terms[min_cluster][:2])}) - ${min_mean:,.0f}")
-    print(f"   Gap: ${max_mean - min_mean:,.0f}")
-    
-    # Finding 3: Predictive power
-    print(f"\n3. PREDICTIVE POWER (Supervised Learning)")
-    print(f"   Cluster CV R²: {comparison['cluster']['r2']:.4f}")
-    print(f"   TF-IDF CV R²:  {comparison['tfidf']['r2']:.4f}")
-    
-    # Conclusion
-    print(f"\n" + "-" * 70)
-    print("CONCLUSION")
-    print("-" * 70)
-    print("""
-    Thematic patterns in NASA SBIR funding:
-    
-    1. AGGREGATE LEVEL: Clear differences exist
-       - Laser/lidar projects receive ~$51K more than materials projects
-       - This represents a meaningful thematic preference
-    
-    2. INDIVIDUAL LEVEL: Themes cannot predict specific awards
-       - CV R² ≈ 0% for both cluster and TF-IDF approaches
-       - Within any theme, awards vary widely
-    
-    3. IMPLICATION: NASA shows thematic preferences in aggregate,
-       but individual award amounts depend on factors beyond theme
-       (proposal quality, team experience, program priorities)
-    """)
-    
-    print("\n" + "=" * 70)
-    print("ANALYSIS COMPLETE")
-    print("=" * 70)
+    print("\nResults ready for evaluation. Call evaluation.run_evaluation()")
     
     return results
 
@@ -747,7 +561,8 @@ def run_thematic_analysis_pipeline(df, X, y, tfidf_matrix, vectorizer, feature_n
 if __name__ == "__main__":
     from data_loader import load_processed_data
     from text_processor import process_abstracts
-    from feature_engineering import create_tfidf_features, create_categorical_features, prepare_features_for_modeling
+    from feature_engineering import create_tfidf_features, prepare_features_for_modeling
+    from evaluation import run_evaluation
     
     print("=" * 70)
     print("NASA SBIR THEMATIC ANALYSIS - MODEL PIPELINE")
@@ -758,10 +573,12 @@ if __name__ == "__main__":
     df = load_processed_data()
     df = process_abstracts(df)
     tfidf_matrix, vectorizer = create_tfidf_features(df)
-    df = create_categorical_features(df)
     X, y, feature_names = prepare_features_for_modeling(df, tfidf_matrix, vectorizer)
     
-    # Run pipeline
+    # Run model pipeline
     results = run_thematic_analysis_pipeline(
         df, X, y, tfidf_matrix, vectorizer, feature_names
     )
+    
+    # Run evaluation pipeline
+    results = run_evaluation(results, df, feature_names)
