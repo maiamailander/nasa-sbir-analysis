@@ -3,12 +3,12 @@ Text preprocessing for NASA SBIR abstract analysis.
 
 This module handles:
 - Cleaning raw text (lowercase, punctuation removal)
-- Removing stop words (including custom structural terms)
+- Removing stop words
 - Lemmatization
 - Preparing text for TF-IDF vectorization
 
 IMPORTANT: We remove structural/administrative language (e.g., "Phase II",
-"NASA", "SBIR") to focus on project CONTENT, not program structure.
+"NASA", "SBIR") to focus on project content, not structure.
 """
 
 import re
@@ -35,8 +35,7 @@ STOP_WORDS = set(stopwords.words('english'))
 # =============================================================================
 # CUSTOM STOP WORDS
 # =============================================================================
-# These terms are removed because they reflect project STRUCTURE or
-# administrative language, not project CONTENT/THEME.
+# These terms are removed because they reflect project structure or administrative language.
 # =============================================================================
 
 CUSTOM_STOP_WORDS = {
@@ -58,7 +57,7 @@ CUSTOM_STOP_WORDS = {
     'demonstrate', 'demonstrated', 'demonstration', 'demonstrating',
     
     # Future/conditional tense - not content
-    'will', 'would', 'could', 'should', 'may', 'might',
+    'will', 'would', 'could', 'should', 'may', 'might', 'can'
     
     # Generic technical terms that appear everywhere
     'technology', 'system', 'systems',
@@ -78,7 +77,39 @@ CUSTOM_STOP_WORDS = {
     'enable', 'enables', 'enabled', 'enabling',
     'support', 'supports', 'supported', 'supporting',
     'include', 'includes', 'included', 'including',
-    'require', 'requires', 'required', 'requiring',
+    'require', 'requires', 'required', 'requiring', 'our', 'the', 
+    'project', 'and', 'of', 'to', 'a', 'in', 'for', 'will', 'be', 
+    'is', 'with', 'that', 'this', 'as', 'on', 'an', 'by', 'are', 'at',
+    'which', 'i', 'we', 'not', 'its',
+
+    # Additional non-related verbs
+    'propose', 'proposed', 'aim', 'aims', 'seek', 'seeks',
+    'design', 'designed',  # Often generic ("designed to...")
+    'create', 'created', 'creating',
+    'improve', 'improved', 'improving', 'improvement',
+    'enhance', 'enhanced', 'enhancing', 'enhancement',
+    'develop', 'developed', 'using', 'use',
+    'provide'
+    
+    # Performance language
+    'performance', 'capability', 'capabilities',
+    'solution', 'solutions',
+    'application', 'applications',
+    
+    # Process language
+    'process', 'processes', 'processing',
+    'test', 'testing', 'tested',
+    'evaluate', 'evaluation', 'evaluated',
+    
+    # Cost/benefit language (not thematic)
+    'cost', 'costs', 'reduce', 'reduced', 'reduction',
+    'benefit', 'benefits',
+    'commercial', 'commercialization',
+    
+    # Time references
+    'current', 'currently', 'existing',
+    'future', 'potential', 'potentially',
+    'previously', 'prior', 'historical',
 }
 
 # Combine with standard stop words

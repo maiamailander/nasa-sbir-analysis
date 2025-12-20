@@ -119,7 +119,6 @@ def prepare_features(df):
     """
     print("Preparing features...")
     
-    # Columns to drop - location/date fields not needed
     cols_to_drop = [
         'address1',
         'address2',
@@ -154,6 +153,7 @@ def prepare_features(df):
     
     return df
 
+# Calling each separate function and executing in terminal
 
 def load_and_clean_data(raw_path=RAW_FILE_PATH, save_path=PROCESSED_FILE_PATH):
     """
