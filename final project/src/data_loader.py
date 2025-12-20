@@ -4,9 +4,9 @@ Data loading and preprocessing for NASA SBIR awards analysis.
 This module handles:
 - Loading raw SBIR award data from Excel
 - Filtering to NASA awards only
-- Dropping irrelevant columns (including phase - excluded from thematic analysis)
+- Dropping irrelevant columns
 - Handling missing values
-- Saving cleaned data for downstream analysis
+- Saving cleaned data for analysis
 """
 
 import pandas as pd
@@ -21,10 +21,9 @@ RAW_FILE_PATH = 'data/award_data.xlsx'
 PROCESSED_FILE_PATH = 'data/processed/award_data_filtered.csv'
 AGENCY_NAME = "National Aeronautics and Space Administration"
 
-# Columns to drop - administrative/contact fields AND structural features
-# We exclude 'phase' because our analysis focuses on THEMATIC content, not program structure
+# Columns to drop - administrative fields and structural features
+
 COLS_TO_DROP = [
-    # Administrative/contact fields
     'branch',
     'program',
     'agency tracking number',
@@ -49,10 +48,8 @@ COLS_TO_DROP = [
     'ri name',
     'ri poc name',
     'ri poc phone',
-    # Structural features - excluded for thematic analysis
-    'phase',  # Phase I/II is structural, not thematic
+    'phase',
 ]
-
 
 # =============================================================================
 # FUNCTIONS
@@ -71,7 +68,7 @@ def load_raw_data(file_path=RAW_FILE_PATH):
 
 
 def filter_by_agency(df, agency_name=AGENCY_NAME):
-    """Filter DataFrame to keep only rows from specified agency."""
+    """Filter DataFrame to keep only rows from NASA."""
     rows_before = len(df)
     
     df_filtered = df[df['agency'] == agency_name].copy()
@@ -80,7 +77,7 @@ def filter_by_agency(df, agency_name=AGENCY_NAME):
     pct_kept = rows_after / rows_before * 100
     
     print(f"  Filtered to '{agency_name}'")
-    print(f"  Kept {rows_after:,} of {rows_before:,} rows ({pct_kept:.1f}%)")
+    print(f"  Kept {rows_after:,} of {rows_before:,} rows ({pct_kept:.3f}%)")
     
     return df_filtered
 
@@ -131,24 +128,18 @@ def prepare_features(df):
         'zip',
         'proposal award date',
         'contract end date',
-        'agency',  # All rows are NASA
+        'agency', # Now that these are all NASA
+        'number employees'  
     ]
     
     df = df.drop(columns=cols_to_drop, errors='ignore')
-    print(f"  Dropped location/date columns: {len(cols_to_drop)} columns removed")
+    print(f"  Dropped location/date/structural columns: {len(cols_to_drop)} columns removed")
     
     # Fill missing topic codes with "Unknown"
     if 'topic code' in df.columns:
         missing_topic = df['topic code'].isnull().sum()
         df['topic code'] = df['topic code'].fillna('Unknown')
         print(f"  Filled {missing_topic:,} missing topic codes with 'Unknown'")
-    
-    # Fill missing employee counts with median
-    if 'number employees' in df.columns:
-        missing_emp = df['number employees'].isnull().sum()
-        median_emp = df['number employees'].median()
-        df['number employees'] = df['number employees'].fillna(median_emp)
-        print(f"  Filled {missing_emp:,} missing employee counts with median ({median_emp:.0f})")
     
     # Drop rows with any remaining missing values in critical columns
     critical_cols = ['company', 'award title', 'abstract', 'award amount', 'award year']
