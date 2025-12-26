@@ -22,11 +22,11 @@ def create_tfidf_features(df, text_column='abstract_clean', max_features=500):
     print(f"  Max features: {max_features}")
     
     vectorizer = TfidfVectorizer(
-        max_features=max_features,
-        min_df=5,
-        max_df=0.95,
-        ngram_range=(1, 2)
-    )
+    max_features=max_features,  # Limit to top 500 terms
+    min_df=5,                   # Term must appear in at least 5 documents
+    max_df=0.95,                # Ignore terms in >95% of documents
+    ngram_range=(1, 2)          # Include single words and bigrams
+)
     
     tfidf_matrix = vectorizer.fit_transform(df[text_column])
     
@@ -46,10 +46,8 @@ def create_tfidf_features(df, text_column='abstract_clean', max_features=500):
 
 def prepare_features_for_modeling(df, tfidf_matrix, vectorizer):
     """
-    Combine TF-IDF and categorical features into final feature matrix.
+    Prepare TF-IDF features and target variable for modeling.
     
-    NOTE: Only thematic features are included.
-
     """
     print("\nPreparing final feature matrix...")
     
