@@ -145,12 +145,10 @@ def clean_text(text):
     Clean a single text string.
     
     Parameters:
-    -----------
-    text : str
+    str
         Raw abstract text
         
     Returns:
-    --------
     str
         Cleaned text ready for vectorization
     """
@@ -194,6 +192,20 @@ def process_abstracts(df, text_column='abstract'):
     
     return df
 
+def show_cleaning_example():
+    """
+    Demonstrate text cleaning with a sample abstract.
+    """
+    sample = """
+    In this Phase II SBIR effort, NASA proposes to develop an innovative
+    lunar propulsion system. The team will demonstrate the technology
+    using advanced thermal management. This project builds on Phase I results.
+    """
+    
+    print("\n  Original text:")
+    print(f"    {sample.strip()}")
+    print("\n  Cleaned text:")
+    print(f"    {clean_text(sample)}")
 
 if __name__ == "__main__":
     sample = """

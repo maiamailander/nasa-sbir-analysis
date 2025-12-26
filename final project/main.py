@@ -59,15 +59,15 @@ def main():
     # =========================================================================
     # STEP 2: TEXT PREPROCESSING
     # =========================================================================
+    
     print("\n" + "=" * 70)
     print("STEP 2: TEXT PREPROCESSING")
     print("=" * 70)
     
-    df = process_abstracts(df)
+    from src.text_processor import show_cleaning_example
+    show_cleaning_example()
     
-    # Show a sample of cleaned text
-    print("\nSample cleaned abstract:")
-    print(df['abstract_clean'].iloc[0][:200] + "...")
+    df = process_abstracts(df)
     
     # =========================================================================
     # STEP 3: FEATURE ENGINEERING
