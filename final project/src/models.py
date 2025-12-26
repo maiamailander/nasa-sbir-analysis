@@ -280,13 +280,12 @@ def regression_on_clusters(cluster_labels, y, cluster_terms):
     print("-" * 50)
     
     cv_results = {}
-    for name in ['Linear Regression', 'Ridge Regression', 'Random Forest']:
-        if name == 'Linear Regression':
-            model = LinearRegression()
-        elif name == 'Ridge Regression':
-            model = Ridge(alpha=1.0)
-        else:
-            model = RandomForestRegressor(n_estimators=100, max_depth=5, random_state=0, n_jobs=-1)
+    for name, model in [
+    ('Linear Regression', LinearRegression()),
+    ('Ridge Regression', Ridge(alpha=1.0)),
+    ('Random Forest', RandomForestRegressor(n_estimators=100, max_depth=15, random_state=0, n_jobs=-1)),
+    ('Gradient Boosting', GradientBoostingRegressor(n_estimators=100, max_depth=5, learning_rate=0.1, random_state=0)),
+]:
         
         r2_scores = cross_val_score(model, cluster_dummies, y, cv=5, scoring='r2')
         mae_scores = -cross_val_score(model, cluster_dummies, y, cv=5, scoring='neg_mean_absolute_error')
@@ -405,6 +404,7 @@ def regression_on_tfidf(X_thematic, y, thematic_features):
         ('Linear Regression', LinearRegression()),
         ('Ridge Regression', Ridge(alpha=1.0)),
         ('Random Forest', RandomForestRegressor(n_estimators=100, max_depth=15, random_state=0, n_jobs=-1)),
+        ('Gradient Boosting', GradientBoostingRegressor(n_estimators=100, max_depth=5, learning_rate=0.1, random_state=0)),
     ]:
         r2_scores = cross_val_score(model, X_scaled, y, cv=5, scoring='r2')
         mae_scores = -cross_val_score(model, X_scaled, y, cv=5, scoring='neg_mean_absolute_error')
@@ -549,7 +549,6 @@ def run_thematic_analysis_pipeline(df, X, y, tfidf_matrix, vectorizer, feature_n
     print("\n" + "=" * 70)
     print("MODEL TRAINING COMPLETE")
     print("=" * 70)
-    print("\nResults ready for evaluation. Call evaluation.run_evaluation()")
     
     return results
 
@@ -578,6 +577,3 @@ if __name__ == "__main__":
     results = run_thematic_analysis_pipeline(
         df, X, y, tfidf_matrix, vectorizer, feature_names
     )
-    
-    print("\nModel training complete.")
-    print("Run evaluation.py for visualizations and final report.")

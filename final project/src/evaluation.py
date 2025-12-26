@@ -1,6 +1,3 @@
-luation · PY
-Copy
-
 """
 Evaluation and Visualization for NASA SBIR Funding Analysis.
 
