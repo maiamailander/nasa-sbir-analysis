@@ -40,7 +40,7 @@ STOP_WORDS = set(stopwords.words('english'))
 
 CUSTOM_STOP_WORDS = {
     # Phase references - structural, not thematic
-    'phase', 'i', 'ii', 'iii', 'iv', 
+    'phase', 'ii', 'iii', 'iv', 
     'one', 'two', 'three', 'four', 'first', 'second', 'third', 'fourth',
 
     # Program names - administrative
@@ -51,18 +51,15 @@ CUSTOM_STOP_WORDS = {
     'nasa', 'jpl', 'gsfc', 'agency', 'center', 'centers',
     
     # Proposal/project language - generic administrative
-    'proposal', 'proposed', 'proposes', 'propose',
-    'project', 'effort', 'work', 'program', 'task', 'tasks',
-    'objective', 'objectives', 'aim', 'aims', 'goal',
+    'proposal', 'proposes',
+    'effort', 'work', 'program', 'task', 'tasks',
+    'objective', 'objectives', 'aim', 'aims',
     
     # Development language - too generic
     'develop', 'developed', 'development', 'developing',
-    'demonstrate', 'demonstrated', 'demonstration', 'demonstrating',
-    'build', 'built', 'building', 'builds',
-    'test', 'tested', 'testing', 'tests',
     
     # Future/conditional tense - not content
-    'will', 'would', 'could', 'should', 'may', 'might', 'can',
+    'would', 'could', 'should', 'may', 'might', 'can',
     
     # Generic technical terms that appear everywhere
     'technology', 'system', 'systems', 'trl',
@@ -70,7 +67,7 @@ CUSTOM_STOP_WORDS = {
     'research', 'study', 'analysis', 'case',
     'data', 'information', 'resulted',
     'result', 'results', 'finding', 'findings',
-    'goal', 'objective', 'outcome', 'outcomes',
+    'goal', 'outcome', 'outcomes',
     'innovation', 'innovative', 'novel', 'new',
     
     # Company/team references
@@ -79,29 +76,27 @@ CUSTOM_STOP_WORDS = {
     # Common filler words
     'also', 'well', 'however', 'therefore', 'thus',
     'using', 'used', 'use', 'based',
-    'provide', 'provides', 'provided', 'providing',
+    'provides', 'provided', 'providing',
     'enable', 'enables', 'enabled', 'enabling',
     'support', 'supports', 'supported', 'supporting',
     'include', 'includes', 'included', 'including',
     'require', 'requires', 'required', 'requiring', 'our', 'the', 
-    'project', 'and', 'of', 'to', 'a', 'in', 'for', 'will', 'be', 
-    'is', 'with', 'that', 'this', 'as', 'on', 'an', 'by', 'are', 'at',
-    'which', 'i', 'we', 'not', 'its', 'from', 'or', 'have', 'has',
-    'but', 'all', 'more', 'other', 'such', 'these', 'those', 'than',
+    'project', 'will', 'be', 
+    'is', 'with', 'that', 'this',
+    'which', 'we', 'not', 'its', 'from', 'have', 'has',
+    'more', 'other', 'such', 'these', 'those', 'than',
 
     # Additional non-related verbs
-    'propose', 'proposed', 'aim', 'aims', 'seek', 'seeks',
+    'propose', 'proposed', 'seek', 'seeks',
     'design', 'designed',
     'create', 'created', 'creating',
     'improve', 'improved', 'improving', 'improvement',
     'enhance', 'enhanced', 'enhancing', 'enhancement',
-    'develop', 'developed', 'using', 'use',
     'provide', 'advanced', 'build', 'building', 'built', 'builds',
     'demonstrate', 'demonstrated', 'demonstrating',
     'utilize', 'utilized', 'utilizing',
     'manage', 'managed', 'management',
     'source', 'sourced', 'sourcing',
-    'control', 'controlled', 'controlling',
     'multiple', 'various', 'different',
     'integrated', 'integration', 'integrate',
     
@@ -109,12 +104,12 @@ CUSTOM_STOP_WORDS = {
     'performance', 'capability', 'capabilities',
     'solution', 'solutions',
     'application', 'applications',
-    'extreme', 'objective', 
+    'extreme', 
     'safe', 'safety',
     'relevant', 'relate', 'related',
     'efficient', 'efficiency', 'optimize', 'optimized',
     'mission', 'missions', 'prototype',
-    'succesful', 'successfully', 'success',
+    'successful', 'successfully', 'success',
     'deliver', 'delivered', 'delivering', 'delivery',
     
     # Process language
