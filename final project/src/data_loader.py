@@ -51,6 +51,16 @@ COLS_TO_DROP = [
     'ri poc name',
     'ri poc phone',
     'phase',
+    'address1',
+    'address2',
+    'city',
+    'state',
+    'zip',
+    'proposal award date',
+    'contract end date',
+    'agency',
+    'number employees' 
+    'topic code' 
 ]
 
 # =============================================================================
@@ -79,7 +89,7 @@ def filter_by_agency(df, agency_name=AGENCY_NAME):
     pct_kept = rows_after / rows_before * 100
     
     print(f"  Filtered to '{agency_name}'")
-    print(f"  Kept {rows_after:,} of {rows_before:,} rows ({pct_kept:.3f}%)")
+    print(f"  Kept {rows_after:,} of {rows_before:,} rows ({pct_kept:.2f}%)")
     
     return df_filtered
 
@@ -93,7 +103,7 @@ def drop_columns(df, cols_to_drop=COLS_TO_DROP):
     cols_after = len(df.columns)
     
     print(f"  Dropped {cols_before - cols_after} columns")
-    print(f"  NOTE: 'phase' column excluded for thematic analysis")
+    print("  NOTE: 'phase' column excluded for thematic analysis")
     print(f"  Remaining columns: {list(df.columns)}")
     
     return df
@@ -119,23 +129,7 @@ def prepare_features(df):
     Prepare features for analysis by handling remaining missing values
     and dropping columns not needed for modeling.
     """
-    print("Preparing features...")
-    
-    cols_to_drop = [
-        'address1',
-        'address2',
-        'city',
-        'state',
-        'zip',
-        'proposal award date',
-        'contract end date',
-        'agency', # Now that these are all NASA
-        'number employees'  
-    ]
-    
-    df = df.drop(columns=cols_to_drop, errors='ignore')
-    print(f"  Dropped location/date/structural columns: {len(cols_to_drop)} columns removed")
-    
+
     # Fill missing topic codes with "Unknown"
     if 'topic code' in df.columns:
         missing_topic = df['topic code'].isnull().sum()
