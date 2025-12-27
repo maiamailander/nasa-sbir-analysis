@@ -99,7 +99,7 @@ def main():
     print("STEP 5: EVALUATION AND VISUALIZATION")
     print("=" * 70)
     
-    results = run_evaluation(results, df, feature_names)
+    results = run_evaluation(results, df)
     
     # =========================================================================
     # COMPLETE

@@ -283,7 +283,7 @@ def regression_on_clusters(cluster_labels, y, cluster_terms):
     for name, model in [
     ('Linear Regression', LinearRegression()),
     ('Ridge Regression', Ridge(alpha=1.0)),
-    ('Random Forest', RandomForestRegressor(n_estimators=100, max_depth=5, random_state=0, n_jobs=-1)),
+    ('Random Forest', RandomForestRegressor(n_estimators=100, max_depth=5, min_samples_leaf=10, random_state=0, n_jobs=-1)),
     ('Gradient Boosting', GradientBoostingRegressor(n_estimators=100, max_depth=3, learning_rate=0.1, random_state=0)),
 ]:
         
@@ -403,7 +403,7 @@ def regression_on_tfidf(X_thematic, y, thematic_features):
     for name, model in [
         ('Linear Regression', LinearRegression()),
         ('Ridge Regression', Ridge(alpha=1.0)),
-        ('Random Forest', RandomForestRegressor(n_estimators=100, max_depth=5, random_state=0, n_jobs=-1)),
+        ('Random Forest', RandomForestRegressor(n_estimators=100, max_depth=5, min_samples_leaf=10, random_state=0, n_jobs=-1)),
         ('Gradient Boosting', GradientBoostingRegressor(n_estimators=100, max_depth=3, learning_rate=0.1, random_state=0)),
     ]:
         r2_scores = cross_val_score(model, X_scaled, y, cv=5, scoring='r2')

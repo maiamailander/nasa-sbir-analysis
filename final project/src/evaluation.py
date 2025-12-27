@@ -10,12 +10,12 @@ This module handles:
 
 """
 
+import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import os
-
+from wordcloud import WordCloud
 
 # =============================================================================
 # CONFIGURATION
@@ -144,6 +144,49 @@ def plot_elbow_curve(results, save=True):
     plt.close()
     return fig
 
+def plot_cluster_wordclouds(results, save=True):
+    """
+    Generate word clouds for each thematic cluster.
+    """
+    print("\nGenerating cluster word clouds...")
+    
+    cluster_terms = results['cluster_terms']
+    n_clusters = len(cluster_terms)
+    
+    # Create subplot grid (2 rows x 4 columns for 8 clusters)
+    fig, axes = plt.subplots(2, 4, figsize=(16, 8))
+    axes = axes.flatten()
+    
+    for cluster_id, terms in cluster_terms.items():
+        # Create word frequency dict (higher weight for earlier terms)
+        word_freq = {term: 10 - i for i, term in enumerate(terms)}
+        
+        # Generate word cloud
+        wordcloud = WordCloud(
+            width=400,
+            height=300,
+            background_color='white',
+            colormap='viridis',
+            max_words=10
+        ).generate_from_frequencies(word_freq)
+        
+        # Plot
+        ax = axes[cluster_id]
+        ax.imshow(wordcloud, interpolation='bilinear')
+        ax.set_title(f'Cluster {cluster_id}', fontsize=12, fontweight='bold')
+        ax.axis('off')
+    
+    plt.suptitle('NASA SBIR Project Themes by Cluster', fontsize=14, fontweight='bold')
+    plt.tight_layout()
+    
+    if save:
+        ensure_results_dir()
+        filepath = os.path.join(RESULTS_DIR, 'cluster_wordclouds.png')
+        plt.savefig(filepath, dpi=300, bbox_inches='tight')
+        print(f"  Saved: {filepath}")
+    
+    plt.close()
+    return fig
 
 def plot_funding_by_cluster(results, save=True):
     """
@@ -455,7 +498,7 @@ def print_final_summary(results, df, thematic_features):
     print("-" * 70)
     
     # Finding 1: Project types
-    print(f"\n1. PROJECT TYPES (Unsupervised Learning)")
+    print("\n1. PROJECT TYPES (Unsupervised Learning)")
     print(f"   Discovered {len(cluster_terms)} distinct thematic categories")
     for i, terms in cluster_terms.items():
         print(f"     Cluster {i}: {', '.join(terms[:3])}")
@@ -466,18 +509,18 @@ def print_final_summary(results, df, thematic_features):
     max_mean = cluster_funding.loc[max_cluster, 'mean']
     min_mean = cluster_funding.loc[min_cluster, 'mean']
     
-    print(f"\n2. FUNDING PATTERNS (Descriptive Analysis)")
+    print("\n2. FUNDING PATTERNS (Descriptive Analysis)")
     print(f"   Highest: Cluster {max_cluster} ({', '.join(cluster_terms[max_cluster][:2])}) - ${max_mean:,.0f}")
     print(f"   Lowest:  Cluster {min_cluster} ({', '.join(cluster_terms[min_cluster][:2])}) - ${min_mean:,.0f}")
     print(f"   Gap: ${max_mean - min_mean:,.0f}")
     
     # Finding 3: Predictive power
-    print(f"\n3. PREDICTIVE POWER (Supervised Learning)")
+    print("\n3. PREDICTIVE POWER (Supervised Learning)")
     print(f"   Cluster CV R²: {comparison['cluster']['r2']:.4f}")
     print(f"   TF-IDF CV R²:  {comparison['tfidf']['r2']:.4f}")
     
     # Conclusion
-    print(f"\n" + "-" * 70)
+    print("\n" + "-" * 70)
     print("CONCLUSION")
     print("-" * 70)
     print("""
@@ -501,7 +544,7 @@ def print_final_summary(results, df, thematic_features):
 # MAIN EVALUATION PIPELINE
 # =============================================================================
 
-def run_evaluation(results, df, thematic_features):
+def run_evaluation(results, df):
     """
     Run the complete evaluation pipeline.
     
@@ -511,8 +554,6 @@ def run_evaluation(results, df, thematic_features):
         Results dictionary from run_thematic_analysis_pipeline()
     df : pd.DataFrame
         The processed DataFrame
-    thematic_features : list
-        List of thematic feature names
     
     Returns:
     --------
@@ -523,6 +564,8 @@ def run_evaluation(results, df, thematic_features):
     print("EVALUATION AND VISUALIZATION")
     print("=" * 70)
     
+    thematic_features = results['thematic_features']
+
     # Run comparison
     comparison = compare_approaches(results['cluster_cv'], results['tfidf_cv'])
     results['comparison'] = comparison
@@ -537,6 +580,7 @@ def run_evaluation(results, df, thematic_features):
     plot_feature_importance(results)
     plot_model_comparison(results)
     plot_cluster_distribution(results)
+    plot_cluster_wordclouds(results)
     
     # Create summary tables
     print("\n" + "-" * 70)
@@ -569,6 +613,7 @@ def run_evaluation(results, df, thematic_features):
     print("  - cluster_summary.csv")
     print("  - model_performance.csv")
     print("  - top_predictive_words.csv")
+    print("  - cluster_wordclouds.png")
     
     return results
 
@@ -601,4 +646,4 @@ if __name__ == "__main__":
     )
     
     # Run evaluation pipeline
-    results = run_evaluation(results, df, feature_names)
+    results = run_evaluation(results, df)

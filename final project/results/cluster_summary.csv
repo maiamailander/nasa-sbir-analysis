@@ -1,9 +1,9 @@
 Cluster,Theme,Projects,Mean Award,Median Award,Std Dev
-5,"laser, lidar, fiber",574,305095.0,124990.0,280545.0
-1,"water, technology, space",3044,295520.0,124978.0,351764.0
-3,"heat, thermal, temperature",518,292622.0,124948.0,370931.0
-2,"sensor, measurement, monitoring",970,286131.0,124975.0,310034.0
-7,"power, optical, technology",3303,285631.0,124967.0,319904.0
-0,"model, tool, software",3750,283697.0,124955.0,305977.0
-6,"cell, solar, battery",652,274003.0,124965.0,269737.0
-4,"material, composite, structure",1506,253701.0,124923.0,263841.0
+2,"laser, lidar, fiber",645,300738.0,124981.0,279069.0
+0,"heat, thermal, temperature",547,296247.0,124961.0,367879.0
+3,"power, space, device",6092,290728.0,124970.0,337957.0
+6,"sensor, measurement, monitoring",1010,288292.0,124978.0,317803.0
+5,"aircraft, flight, air",1024,288227.0,124974.0,293153.0
+1,"model, tool, software",2884,283641.0,124948.0,307527.0
+7,"cell, battery, solar",542,263038.0,124956.0,260193.0
+4,"material, composite, structure",1573,252888.0,124930.0,262035.0
