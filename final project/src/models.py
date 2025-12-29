@@ -1,8 +1,6 @@
 """
 Machine Learning Models for NASA SBIR Funding Analysis.
 
-METHODOLOGY:
-============
 This analysis investigates which project themes are associated with 
 higher NASA SBIR funding. We have excluded structural factors 
 (phase, year, company demographics) to isolate thematic effects.

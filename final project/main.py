@@ -2,8 +2,8 @@
 Main entry point for NASA SBIR Investment Analysis.
 
 Research Question:
-    Which project themes are most strongly associated with 
-    NASA SBIR award amounts?
+    Do Space Project Themes Influence Funding? A Machine Learning 
+    Approach Using K-Means Clustering and Regression Model Comparison
 
 This script orchestrates the full analysis pipeline:
     1. Data loading and cleaning
@@ -23,7 +23,7 @@ Date: December 2025
 import os
 
 from src.data_loader import load_and_clean_data, load_processed_data
-from src.text_processor import process_abstracts
+from src.text_processor import process_abstracts, show_cleaning_example
 from src.feature_engineering import create_tfidf_features, prepare_features_for_modeling
 from src.models import run_thematic_analysis_pipeline
 from src.evaluation import run_evaluation
@@ -34,7 +34,7 @@ def main():
     
     print("=" * 70)
     print("NASA SBIR INVESTMENT ANALYSIS")
-    print("Identifying drivers of funding in the space technology sector")
+    print("Research Question: Do Space Project Themes Influence Funding?")
     print("=" * 70)
     
     # =========================================================================
@@ -59,14 +59,11 @@ def main():
     # =========================================================================
     # STEP 2: TEXT PREPROCESSING
     # =========================================================================
-    
     print("\n" + "=" * 70)
     print("STEP 2: TEXT PREPROCESSING")
     print("=" * 70)
     
-    from src.text_processor import show_cleaning_example
     show_cleaning_example()
-    
     df = process_abstracts(df)
     
     # =========================================================================
@@ -87,6 +84,15 @@ def main():
     print("\n" + "=" * 70)
     print("STEP 4: MODEL TRAINING")
     print("=" * 70)
+    print("""
+    Part 1: Unsupervised Learning (K-Means Clustering)
+        - Discover natural project groupings from TF-IDF features
+        - Analyze funding patterns by theme
+    
+    Part 2: Supervised Learning (Regression)
+        - Test if cluster membership predicts funding
+        - Compare: Linear, Ridge, Random Forest, Gradient Boosting
+    """)
     
     results = run_thematic_analysis_pipeline(
         df, X, y, tfidf_matrix, vectorizer, feature_names
@@ -98,6 +104,11 @@ def main():
     print("\n" + "=" * 70)
     print("STEP 5: EVALUATION AND VISUALIZATION")
     print("=" * 70)
+    print("""
+    - Compare cluster vs TF-IDF regression approaches
+    - Generate plots (elbow curve, funding by cluster, model comparison)
+    - Create summary tables for reporting
+    """)
     
     results = run_evaluation(results, df)
     
@@ -105,16 +116,25 @@ def main():
     # COMPLETE
     # =========================================================================
     print("\n" + "=" * 70)
-    print("PIPELINE COMPLETE")
+    print("ANALYSIS COMPLETE")
     print("=" * 70)
     print("""
-    Outputs:
-    - Console: Full analysis results
-    - results/: Plots and summary tables
+    Key Outputs:
+    ├── results/
+    │   ├── elbow_curve.png           # K selection justification
+    │   ├── funding_by_cluster.png    # Theme vs funding visualization
+    │   ├── cluster_wordclouds.png    # Theme visualization
+    │   ├── feature_importance.png    # Top predictive words
+    │   ├── model_comparison.png      # Regression model comparison
+    │   ├── cluster_distribution.png  # Project distribution by theme
+    │   ├── cluster_summary.csv       # Theme statistics
+    │   ├── model_performance.csv     # CV results for all models
+    │   └── top_predictive_words.csv  # Feature importance ranking
     
-    Next steps:
-    - Review plots in results/ folder
-    - Use summary tables for your report
+    Research Finding:
+        Thematic patterns exist at aggregate level (laser/lidar projects
+        receive ~$48K more than materials projects), but themes cannot
+        predict individual award amounts (CV R² ≈ -0.045 for all models).
     """)
     
     return results

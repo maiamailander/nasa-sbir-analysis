@@ -1,6 +1,6 @@
-# Clustering and regression using Machine Learning : Space Sector Investment
+# Clustering and regression using Machine Learning : Space Sector Investment Predictions
 
-# Research Question : Which regression model — Linear, Ridge, Random Forest, or Gradient Boosting — best predicts NASA SBIR project funding amounts from thematic clusters identified through K-Means?
+# Research Question : Do Space Project Themes Influence Funding? A Machine Learning Approach Using K-Means Clustering and Regression Model Comparison
 
 ## Setup
 
