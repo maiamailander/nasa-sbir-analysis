@@ -14,5 +14,4 @@ dependencies:
   - jupyter
   - statsmodels
   - pip
-  - pip:
-    - wordcloud
+  - wordcloud

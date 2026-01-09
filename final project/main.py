@@ -1,23 +1,17 @@
 """
-Main entry point for NASA SBIR Investment Analysis.
-
 Research Question:
-    Do Space Project Themes Influence Funding? A Machine Learning 
-    Approach Using K-Means Clustering and Regression Model Comparison
+    Do Space Project Themes Influence Funding? A Machine Learning Approach Using K-Means Clustering and Regression Model Comparison
 
-This script orchestrates the full analysis pipeline:
+This script runs the full analysis pipeline:
     1. Data loading and cleaning
-    2. Text preprocessing (NLP)
+    2. Text preprocessing 
     3. Feature engineering (TF-IDF)
     4. Model training (clustering + regression)
     5. Evaluation and visualization
 
-Usage:
-    python main.py
-
 Author: Maia Mailander
 Course: Introduction to Data Science and Advanced Programming
-Date: December 2025
+Date: January 2026
 """
 
 import os
@@ -34,7 +28,7 @@ def main():
     
     print("=" * 70)
     print("NASA SBIR INVESTMENT ANALYSIS")
-    print("Research Question: Do Space Project Themes Influence Funding?")
+    print("Research Question: Do Space Project Themes Influence Funding? A Machine Learning Approach Using K-Means Clustering and Regression Model Comparison.")
     print("=" * 70)
     
     # =========================================================================

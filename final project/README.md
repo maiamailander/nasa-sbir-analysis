@@ -30,12 +30,12 @@ final-project
 - main.py
 - README.md
 
-# Results
+# Regression Models and Results
 Linear Regression 
 Ridge Regression
 Random Forest
 Gradient Boosting
-- Low R^2 indicates thematic content cannot predict individual award amounts, akthough aggregate differences are clear across themes.
+- Low R^2 indicates thematic content cannot predict individual award amounts, although aggregate differences are observable across themes.
 
 # Requirements
 Python3.11

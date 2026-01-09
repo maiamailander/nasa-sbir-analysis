@@ -99,7 +99,7 @@ def perform_clustering(tfidf_matrix, n_clusters=8, random_state=0):
     
     print(f"\nFitting {tfidf_matrix.shape[0]:,} samples...")
     cluster_labels = kmeans.fit_predict(tfidf_matrix)
-    print(f"Complete!")
+    print(f"Complete.")
     
     # Cluster distribution
     unique, counts = np.unique(cluster_labels, return_counts=True)
@@ -144,7 +144,7 @@ def analyze_funding_by_theme(df, cluster_labels, cluster_terms):
     print("\n" + "-" * 50)
     print("FUNDING BY PROJECT THEME")
     print("-" * 50)
-    print("\nQuestion: Which project types receive higher funding?\n")
+    print("\nQuestion: Which project themes receive higher funding?\n")
     
     df_analysis = df.copy()
     df_analysis['cluster'] = cluster_labels
@@ -214,7 +214,7 @@ def analyze_funding_by_theme(df, cluster_labels, cluster_terms):
 
 def regression_on_clusters(cluster_labels, y, cluster_terms):
     """
-    Test whether project TYPE (cluster) predicts funding.
+    Test whether project theme (cluster) predicts funding.
     
     This is the core supervised learning test: can the thematic
     categories we discovered predict award amounts?
@@ -463,7 +463,7 @@ def run_thematic_analysis_pipeline(df, X, y, tfidf_matrix, vectorizer, feature_n
     print("=" * 70)
     print("""
     Research Question:
-    "Which project THEMES are associated with higher NASA funding?"
+    "Do Space Project Themes Influence Funding? A Machine Learning Approach Using K-Means Clustering and Regression Model Comparison"
     
     Methodology:
     - Exclude structural factors (phase, year, demographics)
@@ -490,7 +490,7 @@ def run_thematic_analysis_pipeline(df, X, y, tfidf_matrix, vectorizer, feature_n
     # 1a: Clustering
     print("\n" + "=" * 70)
     print("1a. K-MEANS CLUSTERING")
-    print("Research Question: What types of projects does NASA fund?")
+    print("Research Question: Do Space Project Themes Influence Funding? A Machine Learning Approach Using K-Means Clustering and Regression Model Comparison.")
     print("=" * 70)
     
     k_range, inertias = find_optimal_clusters(tfidf_matrix, max_k=12)
@@ -505,7 +505,7 @@ def run_thematic_analysis_pipeline(df, X, y, tfidf_matrix, vectorizer, feature_n
     # 1b: Descriptive Analysis
     print("\n" + "=" * 70)
     print("1b. DESCRIPTIVE ANALYSIS")
-    print("Research Question: Which project types receive more funding?")
+    print("Research Question: Do Space Project Themes Influence Funding? A Machine Learning Approach Using K-Means Clustering and Regression Model Comparison.")
     print("=" * 70)
     
     cluster_funding = analyze_funding_by_theme(df, cluster_labels, cluster_terms)
@@ -521,7 +521,7 @@ def run_thematic_analysis_pipeline(df, X, y, tfidf_matrix, vectorizer, feature_n
     # 2a: Cluster Regression
     print("\n" + "=" * 70)
     print("2a. CLUSTER REGRESSION")
-    print("Research Question: Does project TYPE predict funding?")
+    print("Research Question: Do Space Project Themes Influence Funding? A Machine Learning Approach Using K-Means Clustering and Regression Model Comparison")
     print("=" * 70)
     
     cluster_reg, cluster_cv, cluster_coefs = regression_on_clusters(
