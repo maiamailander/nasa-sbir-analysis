@@ -56,10 +56,11 @@ def main():
     print("\n" + "=" * 70)
     print("STEP 2: TEXT PREPROCESSING")
     print("=" * 70)
-    
-    show_cleaning_example()
+
     df = process_abstracts(df)
     
+    show_cleaning_example()
+
     # =========================================================================
     # STEP 3: FEATURE ENGINEERING
     # =========================================================================

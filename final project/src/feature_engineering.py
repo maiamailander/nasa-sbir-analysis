@@ -82,5 +82,4 @@ if __name__ == "__main__":
     tfidf_matrix, vectorizer = create_tfidf_features(df)
     X, y, feature_names = prepare_features_for_modeling(df, tfidf_matrix, vectorizer)
     
-    print("\nFeature engineering complete!")
-    print(f"Ready for modeling with {X.shape[1]} features")
+    print("\nFeature engineering complete.")

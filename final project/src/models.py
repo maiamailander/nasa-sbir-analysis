@@ -220,8 +220,8 @@ def regression_on_clusters(cluster_labels, y, cluster_terms):
     print("REGRESSION ON PROJECT TYPES")
     print("-" * 50)
     print("""
-    Method: Use cluster membership as features (one-hot encoding)
-    Question: Does project TYPE predict funding level?
+    Method: Use cluster membership as input features
+    Question: Does project theme predict funding level?
     """)
     
     # One-hot encode clusters
