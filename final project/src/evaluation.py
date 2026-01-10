@@ -1,12 +1,11 @@
 """
-Evaluation and Visualization for NASA SBIR Funding Analysis.
+Evaluation and Visualization
 
-This module handles:
-- Comparing model approaches (clusters vs TF-IDF)
-- Generating plots (elbow curve, funding by cluster, feature importance, model comparison)
-- Creating summary tables
-- Saving results to the results/ folder
-- Final interpretation and reporting
+This module :
+- Compares regression approaches (clusters vs TF-IDF)
+- Generates plots (cluster distribution, funding by cluster, model comparison)
+- Saves results to the results folder
+- Creates summaries for reporting
 
 """
 
@@ -48,13 +47,13 @@ def compare_approaches(cluster_cv, tfidf_cv):
     print("=" * 70)
     
     print("""
-    Question: Does clustering lose predictive information?
+    Test: Does clustering lose predictive information?
     
     If cluster regression performs similarly to TF-IDF regression,
-    then grouping words into themes preserves the relevant signal.
+    then we have not lost information by clustering.
     """)
     
-    # Best results from each approach
+    # Taking the best results from each approach
     best_cluster = max(cluster_cv.keys(), key=lambda x: cluster_cv[x]['r2_mean'])
     best_tfidf = max(tfidf_cv.keys(), key=lambda x: tfidf_cv[x]['r2_mean'])
     
@@ -75,7 +74,7 @@ def compare_approaches(cluster_cv, tfidf_cv):
     if abs(cluster_r2 - tfidf_r2) < 0.02:
         conclusion = "similar"
         interpretation = """
-    Both approaches show similar (low) predictive power.
+    Both approaches show similar predictive power.
     This validates that clustering doesn't lose information —
     the 8 cluster features capture the same signal as 500 words.
         """
@@ -144,50 +143,6 @@ def plot_elbow_curve(results, save=True):
     plt.close()
     return fig
 
-def plot_cluster_wordclouds(results, save=True):
-    """
-    Generate word clouds for each thematic cluster.
-    """
-    print("\nGenerating cluster word clouds...")
-    
-    cluster_terms = results['cluster_terms']
-    n_clusters = len(cluster_terms)
-    
-    # Create subplot grid (2 rows x 4 columns for 8 clusters)
-    fig, axes = plt.subplots(2, 4, figsize=(16, 8))
-    axes = axes.flatten()
-    
-    for cluster_id, terms in cluster_terms.items():
-        # Create word frequency dict (higher weight for earlier terms)
-        word_freq = {term: 10 - i for i, term in enumerate(terms)}
-        
-        # Generate word cloud
-        wordcloud = WordCloud(
-            width=400,
-            height=300,
-            background_color='white',
-            colormap='viridis',
-            max_words=10
-        ).generate_from_frequencies(word_freq)
-        
-        # Plot
-        ax = axes[cluster_id]
-        ax.imshow(wordcloud, interpolation='bilinear')
-        ax.set_title(f'Cluster {cluster_id}', fontsize=12, fontweight='bold')
-        ax.axis('off')
-    
-    plt.suptitle('NASA SBIR Project Themes by Cluster', fontsize=14, fontweight='bold')
-    plt.tight_layout()
-    
-    if save:
-        ensure_results_dir()
-        filepath = os.path.join(RESULTS_DIR, 'cluster_wordclouds.png')
-        plt.savefig(filepath, dpi=300, bbox_inches='tight')
-        print(f"  Saved: {filepath}")
-    
-    plt.close()
-    return fig
-
 def plot_funding_by_cluster(results, save=True):
     """
     Bar chart showing mean funding by project theme.
@@ -243,40 +198,6 @@ def plot_funding_by_cluster(results, save=True):
     
     plt.close()
     return fig
-
-
-def plot_feature_importance(results, top_n=15, save=True):
-    """
-    Bar chart showing top predictive words from Random Forest.
-    """
-    print("\nGenerating feature importance plot...")
-    
-    importance_df = results['tfidf_importance']
-    
-    # Get top N features
-    top_features = importance_df.head(top_n).copy()
-    
-    fig, ax = plt.subplots(figsize=(10, 8))
-    
-    colors = sns.color_palette("viridis", top_n)[::-1]
-    bars = ax.barh(range(top_n), top_features['importance'].values[::-1], color=colors)
-    
-    ax.set_yticks(range(top_n))
-    ax.set_yticklabels(top_features['word'].values[::-1], fontsize=10)
-    ax.set_xlabel('Feature Importance', fontsize=12)
-    ax.set_title(f'Top {top_n} Predictive Words (Random Forest)', fontsize=14, fontweight='bold')
-    
-    plt.tight_layout()
-    
-    if save:
-        ensure_results_dir()
-        filepath = os.path.join(RESULTS_DIR, 'feature_importance.png')
-        plt.savefig(filepath, dpi=300, bbox_inches='tight')
-        print(f"  Saved: {filepath}")
-    
-    plt.close()
-    return fig
-
 
 def plot_model_comparison(results, save=True):
     """
@@ -447,27 +368,6 @@ def create_model_performance_table(results, save=True):
     
     return performance_df
 
-
-def create_top_words_table(results, top_n=20, save=True):
-    """
-    Create a table of top predictive words.
-    """
-    print("\nCreating top words table...")
-    
-    importance_df = results['tfidf_importance'].head(top_n).copy()
-    importance_df = importance_df[['word', 'importance']].reset_index(drop=True)
-    importance_df.index = importance_df.index + 1  # Start ranking at 1
-    importance_df.index.name = 'Rank'
-    
-    if save:
-        ensure_results_dir()
-        filepath = os.path.join(RESULTS_DIR, 'top_predictive_words.csv')
-        importance_df.to_csv(filepath)
-        print(f"  Saved: {filepath}")
-    
-    return importance_df
-
-
 # =============================================================================
 # FINAL SUMMARY AND REPORTING
 # =============================================================================
@@ -577,10 +477,8 @@ def run_evaluation(results, df):
     
     plot_elbow_curve(results)
     plot_funding_by_cluster(results)
-    plot_feature_importance(results)
     plot_model_comparison(results)
     plot_cluster_distribution(results)
-    plot_cluster_wordclouds(results)
     
     # Create summary tables
     print("\n" + "-" * 70)
@@ -589,13 +487,11 @@ def run_evaluation(results, df):
     
     cluster_summary = create_cluster_summary_table(results)
     model_performance = create_model_performance_table(results)
-    top_words = create_top_words_table(results)
     
     # Store tables in results
     results['tables'] = {
         'cluster_summary': cluster_summary,
         'model_performance': model_performance,
-        'top_words': top_words
     }
     
     # Print final summary
