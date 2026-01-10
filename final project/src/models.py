@@ -45,7 +45,6 @@ def create_thematic_feature_matrix(X, feature_names):
     print("-" * 70)
     print(f"  Samples: {X.shape[0]:,}")
     print(f"  Features: {X.shape[1]} (all TF-IDF thematic)")
-    print("  Structural features: excluded during feature engineering")
     
     if isinstance(X, pd.DataFrame):
         X_thematic = X.copy()
@@ -66,7 +65,6 @@ def find_optimal_clusters(tfidf_matrix, max_k=15, random_state=0):
     Use Elbow Method to find optimal number of clusters.
     """
     print("\nFinding optimal K using Elbow Method...")
-    print("(Inertia = within-cluster sum of squares)\n")
     
     inertias = []
     k_range = range(2, max_k + 1)
@@ -87,7 +85,6 @@ def perform_clustering(tfidf_matrix, n_clusters=8, random_state=0):
     print(f"\n" + "-" * 50)
     print(f"K-MEANS CLUSTERING")
     print(f"-" * 50)
-    print(f"K-Means is UNSUPERVISED: discovers structure without labels")
     print(f"Parameters: K={n_clusters} clusters")
     
     kmeans = KMeans(

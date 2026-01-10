@@ -509,7 +509,7 @@ def print_final_summary(results, df, thematic_features):
     max_mean = cluster_funding.loc[max_cluster, 'mean']
     min_mean = cluster_funding.loc[min_cluster, 'mean']
     
-    print("\n2. FUNDING PATTERNS (Descriptive Analysis)")
+    print("\n2. FUNDING PATTERNS BY MEAN FUNDING (Descriptive Analysis)")
     print(f"   Highest: Cluster {max_cluster} ({', '.join(cluster_terms[max_cluster][:2])}) - ${max_mean:,.0f}")
     print(f"   Lowest:  Cluster {min_cluster} ({', '.join(cluster_terms[min_cluster][:2])}) - ${min_mean:,.0f}")
     print(f"   Gap: ${max_mean - min_mean:,.0f}")
