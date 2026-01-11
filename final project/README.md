@@ -1,6 +1,9 @@
-# Clustering and regression using Machine Learning : Space Sector Investment Predictions
-
 # Research Question : Do Space Project Themes Influence Funding? A Machine Learning Approach Using K-Means Clustering and Regression Model Comparison
+
+Author Information:
+Name: Maia Mailander
+Student Number: 25434101
+Course: Data Science and Advanced Programming 2026
 
 ## Setup
 
@@ -8,14 +11,9 @@
 conda env create -f environment.yml
 conda activate final-project
 
-# Usage
-python main.py
-
-# Expected output : Thematic cluster analysis and comparison of regression models
-
 # Project structure
 final-project
-- data
+- data/processed
 - results
 - src
 -- __init__.py
@@ -30,14 +28,15 @@ final-project
 - main.py
 - README.md
 
-# Regression Models and Results
-Linear Regression 
-Ridge Regression
-Random Forest
-Gradient Boosting
-- Low R^2 indicates thematic content cannot predict individual award amounts, although aggregate differences are observable across themes.
+# Running the Pipeline
+python main.py
+
+# Expected output : Thematic cluster analysis, visualization tables in the results folder and comparison of regression models
+
+# Regression Results
+- Low R^2 across all modelss indicates we cannot use thematic categories to predict funding amounts, although preferences for certain themes clearly exist at the aggregate level.
 
 # Requirements
 Python3.11
-scikit-learn, pandas, matplotlib, seaborn, nltk, openpyxl
+scikit-learn, pandas, matplotlib, seaborn, nltk, openpyxl and other packages in environment.yml
 
