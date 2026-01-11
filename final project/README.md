@@ -3,7 +3,7 @@
 Author Information:
 Name: Maia Mailander
 Student Number: 25434101
-Course: Data Science and Advanced Programming 2026
+Course: Data Science and Advanced Programming 2025
 
 ## Setup
 
@@ -34,7 +34,7 @@ python main.py
 # Expected output : Thematic cluster analysis, visualization tables in the results folder and comparison of regression models
 
 # Regression Results
-- Low R^2 across all modelss indicates we cannot use thematic categories to predict funding amounts, although preferences for certain themes clearly exist at the aggregate level.
+- Low R^2 across all models indicates we cannot use thematic categories to predict funding amounts, although preferences for certain themes clearly exist at the aggregate level.
 
 # Requirements
 Python3.11

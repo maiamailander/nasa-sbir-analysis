@@ -101,7 +101,7 @@ def main():
     print("=" * 70)
     print("""
     - Compare cluster vs TF-IDF regression approaches
-    - Generate plots (elbow curve, funding by cluster, model comparison)
+    - Generate plots
     - Create summary tables for reporting
     """)
     
@@ -118,14 +118,11 @@ def main():
     ├── results/
     │   ├── elbow_curve.png           # K selection justification
     │   ├── funding_by_cluster.png    # Theme vs funding visualization
-    │   ├── cluster_wordclouds.png    # Theme visualization
-    │   ├── feature_importance.png    # Top predictive words
     │   ├── model_comparison.png      # Regression model comparison
     │   ├── cluster_distribution.png  # Project distribution by theme
     │   ├── cluster_summary.csv       # Theme statistics
-    │   ├── model_performance.csv     # CV results for all models
-    │   └── top_predictive_words.csv  # Feature importance ranking
-    
+    │   └── model_performance.csv     # CV results for all models
+
     Research Finding:
         Thematic patterns exist at aggregate level (laser/lidar projects
         receive ~$48K more than materials projects), but themes cannot

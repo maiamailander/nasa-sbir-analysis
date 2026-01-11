@@ -503,13 +503,10 @@ def run_evaluation(results, df):
     print(f"\nAll outputs saved to: {RESULTS_DIR}/")
     print("  - elbow_curve.png")
     print("  - funding_by_cluster.png")
-    print("  - feature_importance.png")
     print("  - model_comparison.png")
     print("  - cluster_distribution.png")
     print("  - cluster_summary.csv")
     print("  - model_performance.csv")
-    print("  - top_predictive_words.csv")
-    print("  - cluster_wordclouds.png")
     
     return results
 
