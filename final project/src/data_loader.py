@@ -12,10 +12,7 @@ This module handles:
 import pandas as pd
 import os
 
-
-# =============================================================================
 # CONFIGURATION
-# =============================================================================
 
 RAW_FILE_PATH = 'data/award_data.xlsx'
 PROCESSED_FILE_PATH = 'data/processed/award_data_filtered.csv'
@@ -63,9 +60,7 @@ COLS_TO_DROP = [
     'topic code' 
 ]
 
-# =============================================================================
 # FUNCTIONS
-# =============================================================================
 
 def load_raw_data(file_path=RAW_FILE_PATH):
     """Load raw data from Excel file."""
