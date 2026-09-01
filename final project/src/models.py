@@ -6,7 +6,7 @@ higher NASA SBIR funding. We have excluded structural factors
 (phase, year, company demographics) to isolate thematic effects.
 
 STRUCTURE:
-==========
+
 PART 1: UNSUPERVISED LEARNING
     1a. K-Means Clustering - Discover natural project groupings
     1b. Descriptive Analysis - Funding patterns by theme
@@ -28,10 +28,7 @@ from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.preprocessing import StandardScaler
 
-
-# =============================================================================
 # FEATURE CONFIRMATION
-# =============================================================================
 
 def create_thematic_feature_matrix(X, feature_names):
     """
@@ -56,9 +53,7 @@ def create_thematic_feature_matrix(X, feature_names):
     return X_thematic, thematic_features
 
 
-# =============================================================================
 # PART 1a: UNSUPERVISED LEARNING - K-MEANS CLUSTERING
-# =============================================================================
 
 def find_optimal_clusters(tfidf_matrix, max_k=15, random_state=0):
     """
@@ -130,9 +125,7 @@ def get_cluster_top_terms(kmeans, vectorizer, n_terms=10):
     return cluster_terms
 
 
-# =============================================================================
 # PART 1b: UNSUPERVISED LEARNING - DESCRIPTIVE ANALYSIS
-# =============================================================================
 
 def analyze_funding_by_theme(df, cluster_labels, cluster_terms):
     """
@@ -204,10 +197,7 @@ def analyze_funding_by_theme(df, cluster_labels, cluster_terms):
     
     return cluster_stats
 
-
-# =============================================================================
 # PART 2a: SUPERVISED LEARNING - CLUSTER REGRESSION
-# =============================================================================
 
 def regression_on_clusters(cluster_labels, y, cluster_terms):
     """
@@ -321,10 +311,7 @@ def regression_on_clusters(cluster_labels, y, cluster_terms):
     
     return results, cv_results, coef_df
 
-
-# =============================================================================
 # PART 2b: VALIDATION - TF-IDF REGRESSION
-# =============================================================================
 
 def regression_on_tfidf(X_thematic, y, thematic_features):
     """
@@ -435,10 +422,7 @@ def regression_on_tfidf(X_thematic, y, thematic_features):
     
     return results, cv_results, importance_df
 
-
-# =============================================================================
 # MAIN PIPELINE
-# =============================================================================
 
 def run_thematic_analysis_pipeline(df, X, y, tfidf_matrix, vectorizer, feature_names, random_state=0):
     """
@@ -468,18 +452,16 @@ def run_thematic_analysis_pipeline(df, X, y, tfidf_matrix, vectorizer, feature_n
     """)
     
     results = {}
-    
-    # =========================================================================
+
     # FEATURE CONFIRMATION
-    # =========================================================================
+
     X_thematic, thematic_features = create_thematic_feature_matrix(
         X, feature_names
     )
     results['thematic_features'] = thematic_features
     
-    # =========================================================================
     # PART 1: UNSUPERVISED LEARNING
-    # =========================================================================
+  
     print("\n" + "=" * 70)
     print("PART 1: UNSUPERVISED LEARNING")
     print("=" * 70)
@@ -508,9 +490,8 @@ def run_thematic_analysis_pipeline(df, X, y, tfidf_matrix, vectorizer, feature_n
     cluster_funding = analyze_funding_by_theme(df, cluster_labels, cluster_terms)
     results['cluster_funding'] = cluster_funding
     
-    # =========================================================================
     # PART 2: SUPERVISED LEARNING
-    # =========================================================================
+
     print("\n" + "=" * 70)
     print("PART 2: SUPERVISED LEARNING")
     print("=" * 70)
@@ -547,10 +528,7 @@ def run_thematic_analysis_pipeline(df, X, y, tfidf_matrix, vectorizer, feature_n
     
     return results
 
-
-# =============================================================================
 # MAIN EXECUTION
-# =============================================================================
 
 if __name__ == "__main__":
     from data_loader import load_processed_data
