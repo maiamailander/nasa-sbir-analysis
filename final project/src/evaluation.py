@@ -16,9 +16,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from wordcloud import WordCloud
 
-# =============================================================================
 # CONFIGURATION
-# =============================================================================
 
 RESULTS_DIR = 'results'
 
@@ -34,9 +32,7 @@ def ensure_results_dir():
         print(f"Created directory: {RESULTS_DIR}/")
 
 
-# =============================================================================
 # MODEL COMPARISON
-# =============================================================================
 
 def compare_approaches(cluster_cv, tfidf_cv):
     """
@@ -102,9 +98,7 @@ def compare_approaches(cluster_cv, tfidf_cv):
     }
 
 
-# =============================================================================
 # VISUALIZATION FUNCTIONS
-# =============================================================================
 
 def plot_elbow_curve(results, save=True):
     """
@@ -290,10 +284,7 @@ def plot_cluster_distribution(results, save=True):
     plt.close()
     return fig
 
-
-# =============================================================================
 # SUMMARY TABLES
-# =============================================================================
 
 def create_cluster_summary_table(results, save=True):
     """
@@ -368,9 +359,7 @@ def create_model_performance_table(results, save=True):
     
     return performance_df
 
-# =============================================================================
 # FINAL SUMMARY AND REPORTING
-# =============================================================================
 
 def print_final_summary(results, df, thematic_features):
     """
@@ -439,10 +428,7 @@ def print_final_summary(results, df, thematic_features):
        (proposal quality, team experience, program priorities)
     """)
 
-
-# =============================================================================
 # MAIN EVALUATION PIPELINE
-# =============================================================================
 
 def run_evaluation(results, df):
     """
@@ -510,10 +496,7 @@ def run_evaluation(results, df):
     
     return results
 
-
-# =============================================================================
 # MAIN EXECUTION
-# =============================================================================
 
 if __name__ == "__main__":
     from data_loader import load_processed_data
