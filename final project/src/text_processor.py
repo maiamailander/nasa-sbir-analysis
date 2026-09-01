@@ -32,11 +32,9 @@ def download_nltk_data():
 download_nltk_data()
 STOP_WORDS = set(stopwords.words('english'))
 
-# =============================================================================
 # CUSTOM STOP WORDS
-# =============================================================================
+
 # These terms are removed because they reflect project structure or administrative language.
-# =============================================================================
 
 CUSTOM_STOP_WORDS = {
     # Phase references - structural, not thematic
